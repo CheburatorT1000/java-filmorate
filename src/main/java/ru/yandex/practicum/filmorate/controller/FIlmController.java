@@ -24,13 +24,13 @@ public class FIlmController {
 
 
     @GetMapping
-    public Collection<Film> findAll() {
+    Collection<Film> findAll() {
         log.info("Выводим список всех фильмов, размер списка: '{}'", films.size());
         return films.values();
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    Film create(@Valid @RequestBody Film film) {
 
         log.info("Проверяем film в валидаторах");
         validateExistenceForPOST(film);
@@ -50,7 +50,7 @@ public class FIlmController {
     }
 
     @PutMapping
-    public Film put(@Valid @RequestBody Film film) {
+    Film put(@Valid @RequestBody Film film) {
 
         log.info("Проверяем film в валидаторах");
         validateExistenceForPUT(film);
@@ -66,7 +66,7 @@ public class FIlmController {
         return filmFromCreator;
     }
 
-    public Film filmCreator(Film film) {
+    Film filmCreator(Film film) {
         Film filmFromBuilder = Film.builder()
                 .id(film.getId())
                 .name(film.getName())
@@ -78,28 +78,28 @@ public class FIlmController {
         return filmFromBuilder;
     }
 
-    public void validateExistenceForPOST(Film film) {
+    void validateExistenceForPOST(Film film) {
         if (films.containsKey(film.getId())) {
             log.info("Id фильма '{}' ", film.getId());
             throw new ValidationException("Фильм с таким id уже существует!");
         }
     }
 
-    public void validateExistenceForPUT(Film film) {
+    void validateExistenceForPUT(Film film) {
         if (!films.containsKey(film.getId())) {
             log.info("Id фильма '{}' ", film.getId());
             throw new ValidationException("Фильм с таким id осутствует!");
         }
     }
 
-    public void validateDescription(Film film) {
+    void validateDescription(Film film) {
         if (film.getDescription().length() > 200) {
             log.info("Размер описания '{}' ", film.getDescription().length());
             throw new ValidationException("Длина описания не может превышать 200 символов!");
         }
     }
 
-    public void validateReleaseDate(Film film) {
+    void validateReleaseDate(Film film) {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.info("Дата релиза '{}' ", film.getReleaseDate());
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895!");
