@@ -1,110 +1,59 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FIlmController {
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int id = 0;
 
-    private int makeID() {
-        return ++id;
+    private final FilmService filmService;
+
+    public FIlmController(FilmService filmService) {
+        this.filmService = filmService;
     }
-
 
     @GetMapping
     Collection<Film> findAll() {
-        log.info("Выводим список всех фильмов, размер списка: '{}'", films.size());
-        return films.values();
+        return filmService.findAll();
     }
 
     @PostMapping
     Film create(@Valid @RequestBody Film film) {
-
-        log.info("Проверяем film в валидаторах");
-        validateExistenceForPOST(film);
-        validateDescription(film);
-        validateReleaseDate(film);
-
-        log.info("Присваиваем id");
-        film.setId(makeID());
-
-        log.info("Создаем объект в билдере");
-        Film filmFromCreator = filmCreator(film);
-
-        log.info("Добавляем объект в коллекцию");
-        films.put(filmFromCreator.getId(), filmFromCreator);
-
-        return filmFromCreator;
+        return filmService.create(film);
     }
 
     @PutMapping
     Film put(@Valid @RequestBody Film film) {
-
-        log.info("Проверяем film в валидаторах");
-        validateExistenceForPUT(film);
-        validateDescription(film);
-        validateReleaseDate(film);
-
-        log.info("Создаем объект в билдере");
-        Film filmFromCreator = filmCreator(film);
-
-        log.info("Добавляем объект в коллекцию");
-        films.put(filmFromCreator.getId(), filmFromCreator);
-
-        return filmFromCreator;
+        return filmService.update(film);
     }
 
-    Film filmCreator(Film film) {
-        Film filmFromBuilder = Film.builder()
-                .id(film.getId())
-                .name(film.getName())
-                .description(film.getDescription())
-                .releaseDate(film.getReleaseDate())
-                .duration(film.getDuration())
-                .build();
-        log.info("Объект Film создан '{}'", filmFromBuilder.getName());
-        return filmFromBuilder;
+    @GetMapping("{id}")
+    public Film getById(@PathVariable int id) {
+        return filmService.getFilmFromStorage(id);
     }
 
-    void validateExistenceForPOST(Film film) {
-        if (films.containsKey(film.getId())) {
-            log.info("Id фильма '{}' ", film.getId());
-            throw new ValidationException("Фильм с таким id уже существует!");
-        }
+    @PutMapping("/{id}/like/{userId}")
+    Film putLike(@PathVariable("id") int filmId,
+                 @PathVariable int userId) {
+        return filmService.giveLike(filmId, userId);
     }
 
-    void validateExistenceForPUT(Film film) {
-        if (!films.containsKey(film.getId())) {
-            log.info("Id фильма '{}' ", film.getId());
-            throw new ValidationException("Фильм с таким id осутствует!");
-        }
+    @DeleteMapping("/{id}/like/{userId}")
+    Film deleteLike(@PathVariable("id") int filmId,
+                    @PathVariable int userId) {
+        return filmService.deleteLike(filmId, userId);
     }
 
-    void validateDescription(Film film) {
-        if (film.getDescription().length() > 200) {
-            log.info("Размер описания '{}' ", film.getDescription().length());
-            throw new ValidationException("Длина описания не может превышать 200 символов!");
-        }
+    @GetMapping("/popular")
+    Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count) {
+        return filmService.getPopular(count);
     }
 
-    void validateReleaseDate(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Дата релиза '{}' ", film.getReleaseDate());
-            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895!");
-        }
-    }
 }
 
 
