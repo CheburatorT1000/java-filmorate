@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +34,7 @@ class UserControllerTest {
                 .email("mail@mail.ru")
                 .login("Vasya")
                 .birthday(LocalDate.EPOCH)
+                .friends(new HashSet<>())
                 .build();
     }
 
@@ -54,7 +57,7 @@ class UserControllerTest {
     @Test
     void shouldFailValidation() {
         user.setLogin("login WithSpace");
-        assertThrows(ValidationException.class, () -> userController.put(user));
+        assertThrows(ValidationException.class, () -> userController.create(user));
     }
 
     @Test
@@ -66,14 +69,14 @@ class UserControllerTest {
     @Test
     void shouldFailValidationId() {
         userController.create(user);
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(NotFoundException.class, () -> userController.put(user));
     }
 
     @Test
     void shouldFailValidationForPutMethod() {
         userController.create(user);
         user.setId(89);
-        assertThrows(ValidationException.class, () -> userController.put(user));
+        assertThrows(NotFoundException.class, () -> userController.put(user));
     }
 
     @Test
@@ -100,6 +103,6 @@ class UserControllerTest {
                 .login("Masha")
                 .birthday(LocalDate.EPOCH)
                 .build();
-        assertThrows(ValidationException.class, () -> userController.put(user2));
+        assertThrows(NotFoundException.class, () -> userController.put(user2));
     }
 }
