@@ -12,6 +12,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
     private int id = 0;
+
     public int makeID() {
         return ++id;
     }
@@ -39,6 +40,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
+    @Override
     public boolean isAdded(int id) {
         return films.containsKey(id);
     }

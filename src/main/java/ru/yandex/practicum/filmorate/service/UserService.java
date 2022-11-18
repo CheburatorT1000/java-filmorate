@@ -101,7 +101,7 @@ public class UserService {
 
     public User getUserFromStorage(int id) {
 
-        if(userStorage.isAdded(id))
+        if (userStorage.isAdded(id))
             return userStorage.get(id);
         else
             throw new NotFoundException("Пользователь не найден!");
@@ -128,7 +128,7 @@ public class UserService {
     public Collection<User> getFriendsFromUser(int userId) {
 
         User user = getUserFromStorage(userId);
-        
+
         return user.getFriends().stream()
                 .map(userStorage::get)
                 .collect(Collectors.toList());

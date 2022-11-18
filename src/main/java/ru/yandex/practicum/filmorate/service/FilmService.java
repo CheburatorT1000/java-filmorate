@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,7 @@ public class FilmService {
         return filmStorage.update(filmFromCreator);
     }
 
-    Film filmCreator(Film film) {
+    public Film filmCreator(Film film) {
         Film filmFromBuilder = Film.builder()
                 .id(film.getId())
                 .name(film.getName())
@@ -72,28 +71,28 @@ public class FilmService {
         return filmFromBuilder;
     }
 
-    void validateExistenceForPOST(Film film) {
+    public void validateExistenceForPOST(Film film) {
         if (filmStorage.isAdded(film.getId())) {
             log.info("Id фильма '{}' ", film.getId());
             throw new ValidationException("Фильм с таким id уже существует!");
         }
     }
 
-    void validateExistenceForPUT(Film film) {
+    public void validateExistenceForPUT(Film film) {
         if (!filmStorage.isAdded(film.getId())) {
             log.info("Id фильма '{}' ", film.getId());
             throw new NotFoundException("Фильм с таким id осутствует!");
         }
     }
 
-    void validateDescription(Film film) {
+    public void validateDescription(Film film) {
         if (film.getDescription().length() > 200) {
             log.info("Размер описания '{}' ", film.getDescription().length());
             throw new ValidationException("Длина описания не может превышать 200 символов!");
         }
     }
 
-    void validateReleaseDate(Film film) {
+    public void validateReleaseDate(Film film) {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.info("Дата релиза '{}' ", film.getReleaseDate());
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895!");
@@ -102,7 +101,7 @@ public class FilmService {
 
     public Film getFilmFromStorage(int id) {
 
-        if(filmStorage.isAdded(id))
+        if (filmStorage.isAdded(id))
             return filmStorage.get(id);
         else
             throw new NotFoundException("Фильм не найден!");
@@ -121,7 +120,7 @@ public class FilmService {
         Film film = getFilmFromStorage(filmId);
 
         if (film.getUsersLikes().contains(userId))
-           film.getUsersLikes().remove(userId);
+            film.getUsersLikes().remove(userId);
         else
             throw new NotFoundException("Лайк от пользователя отсутствует!");
 

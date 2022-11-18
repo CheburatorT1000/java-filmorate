@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserControllerTest {
 
-    UserStorage userStorage;
-    UserService userService;
-    UserController userController;
-    User user;
+    public UserStorage userStorage;
+    public UserService userService;
+    public UserController userController;
+    public User user;
 
     @BeforeEach
-    void preparingToTest() {
+    public void preparingToTest() {
 
         userStorage = new InMemoryUserStorage();
         userService = new UserService(userStorage);
@@ -39,7 +39,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldReturnListWithUsers() {
+    public void shouldReturnListWithUsers() {
         userController.create(user);
         user.setId(2);
         userController.create(user);
@@ -49,38 +49,38 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldCreateUserWithIdEquals1() {
+    public void shouldCreateUserWithIdEquals1() {
         User userFormTest = userController.create(user);
         assertEquals(1, userFormTest.getId());
     }
 
     @Test
-    void shouldFailValidation() {
+    public void shouldFailValidation() {
         user.setLogin("login WithSpace");
         assertThrows(ValidationException.class, () -> userController.create(user));
     }
 
     @Test
-    void shouldCreateUserWithEmptyName() {
+    public void shouldCreateUserWithEmptyName() {
         userController.create(user);
         assertEquals("Vasya", user.getName());
     }
 
     @Test
-    void shouldFailValidationId() {
+    public void shouldFailValidationId() {
         userController.create(user);
         assertThrows(NotFoundException.class, () -> userController.put(user));
     }
 
     @Test
-    void shouldFailValidationForPutMethod() {
+    public void shouldFailValidationForPutMethod() {
         userController.create(user);
         user.setId(89);
         assertThrows(NotFoundException.class, () -> userController.put(user));
     }
 
     @Test
-    void shouldUpdateName() {
+    public void shouldUpdateName() {
         userController.create(user);
         User user2 = User.builder()
                 .id(1)
@@ -95,7 +95,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldFailUpdateMethod() {
+    public void shouldFailUpdateMethod() {
         userController.create(user);
         User user2 = User.builder()
                 .id(5)
