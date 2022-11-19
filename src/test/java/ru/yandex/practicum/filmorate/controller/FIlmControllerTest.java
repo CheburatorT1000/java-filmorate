@@ -2,22 +2,33 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FIlmControllerTest {
+class FilmControllerTest {
 
-    FIlmController fIlmController;
-    Film film;
+    public FilmStorage filmStorage;
+    public FilmService filmService;
+    public FilmController fIlmController;
+    public Film film;
 
     @BeforeEach
-    void preparingForTest() {
-        fIlmController = new FIlmController();
+    public void preparingForTest() {
+
+        filmStorage = new InMemoryFilmStorage();
+        filmService = new FilmService(filmStorage);
+        fIlmController = new FilmController(filmService);
         film = Film.builder()
+                .id(1)
                 .name("Приключения шурика")
                 .description("С первого дня покупки шуоповерт сломался и его возят по сервисным центрам 3 месяца")
                 .releaseDate(LocalDate.of(2022, 03, 14))
@@ -26,13 +37,13 @@ class FIlmControllerTest {
     }
 
     @Test
-    void shouldReturnAllFilms() {
+    public void shouldReturnAllFilms() {
         fIlmController.create(film);
         assertEquals(1, fIlmController.findAll().size());
     }
 
     @Test
-    void shouldCreate() {
+    public void shouldCreate() {
         fIlmController.create(film);
         Film film2 = Film.builder()
                 .name("asdasdasd")
@@ -45,7 +56,7 @@ class FIlmControllerTest {
     }
 
     @Test
-    void shouldPut() {
+    public void shouldPut() {
         fIlmController.create(film);
         Film film2 = Film.builder()
                 .id(1)
@@ -59,40 +70,41 @@ class FIlmControllerTest {
     }
 
     @Test
-    void shuludCreateFilm() {
-        fIlmController.create(film);
+    public void shuludCreateFilm() {
+        Film film1 = fIlmController.create(film);
         Film film2 = Film.builder()
                 .id(1)
                 .name("Приключения шурика")
                 .description("С первого дня покупки шуоповерт сломался и его возят по сервисным центрам 3 месяца")
                 .releaseDate(LocalDate.of(2022, 03, 14))
                 .duration(20)
+                .usersLikes(new HashSet<>())
                 .build();
-        assertEquals(film, film2);
+        assertEquals(film1, film2);
     }
 
     @Test
-    void validateExistenceForPOST() {
+    public void validateExistenceForPOST() {
         fIlmController.create(film);
         assertThrows(ValidationException.class, () -> fIlmController.create(film));
 
     }
 
     @Test
-    void shouldFailvalidationExistenceForPUT() {
+    public void shouldFailvalidationExistenceForPUT() {
         fIlmController.create(film);
         film.setId(23);
-        assertThrows(ValidationException.class, () -> fIlmController.put(film));
+        assertThrows(NotFoundException.class, () -> fIlmController.put(film));
     }
 
     @Test
-    void shouldFailReleaseDateValidation() {
+    public void shouldFailReleaseDateValidation() {
         film.setReleaseDate(LocalDate.of(1880,12,1));
         assertThrows(ValidationException.class, () -> fIlmController.create(film));
     }
 
     @Test
-    void shouldFailDescriptionValidation() {
+    public void shouldFailDescriptionValidation() {
         film.setDescription("ойойой! айайайа!ойойой! айайайа!ойойой! айайаййайа!ойойой! айайайа!ойойой! айайаййайа!" +
                 "йайа!ойойой! айайайа!ойойой! айайаййайа!ойойой! айайайа!ойойой! айайайойойой! айайайа!ойойой! " +
                 "йайа!ойойой! айайайа!ойойой! айайаййайа!ойойой! айайайа!ойойой! айайаййайа!ойойой! айайайа!ойойой! " +
