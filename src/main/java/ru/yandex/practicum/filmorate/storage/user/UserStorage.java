@@ -6,13 +6,23 @@ import java.util.Collection;
 
 public interface UserStorage {
 
-    User add(User user);
+    boolean isAdded(int id);
 
-    User get(int id);
+    User save(User user);
 
     User update(User user);
 
     Collection<User> findAll();
 
-    boolean isAdded(int id);
+    User findUserById(int id);
+
+    void addFriend(User user, User friend);
+
+    boolean deleteFriend(User user, User friend);
+
+    Collection<User> getFriendsFromUser(int id);
+
+    Collection<User> getCommonFriendsFromUser(int id, int otherId);
+
+    boolean isFriendAdded(User user, User friend);
 }

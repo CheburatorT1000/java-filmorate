@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -20,7 +21,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDb") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -40,7 +41,7 @@ public class UserService {
 
         log.info("Добавляем объект в коллекцию");
 
-        return userStorage.add(userFromCreator);
+        return userStorage.save(userFromCreator);
     }
 
     public User put(User user) {
@@ -64,7 +65,6 @@ public class UserService {
                 .login(user.getLogin())
                 .name(user.getName())
                 .birthday(user.getBirthday())
-                .friends(new HashSet<>())
                 .build();
         log.info("Объект User создан, имя : '{}'", userFromBuilder.getName());
         return userFromBuilder;
@@ -98,50 +98,44 @@ public class UserService {
         }
         return user;
     }
-
-    public User getUserFromStorage(int id) {
-
+    // на удаление
+    public User findUserById(int id) {
         if (userStorage.isAdded(id))
-            return userStorage.get(id);
+            return userStorage.findUserById(id);
         else
             throw new NotFoundException("Пользователь не найден!");
     }
 
     public void addFriend(int id, int friendId) {
+        User user1 = findUserById(id);
+        User friend = findUserById(friendId);
 
-        User user1 = getUserFromStorage(id);
-        User user2 = getUserFromStorage(friendId);
 
-        user1.getFriends().add(friendId);
-        user2.getFriends().add(id);
+        if (!userStorage.isFriendAdded(user1, friend))
+            userStorage.addFriend(user1, friend);
+        else
+            throw new ValidationException("Пользователь уже был добавлен!");
     }
 
     public void deleteFriend(int id, int friendId) {
+        User user1 = findUserById(id);
+        User friend = findUserById(friendId);
 
-        User user1 = getUserFromStorage(id);
-        User user2 = getUserFromStorage(friendId);
-
-        user1.getFriends().remove(friendId);
-        user2.getFriends().remove(id);
+        userStorage.deleteFriend(user1, friend);
     }
 
     public Collection<User> getFriendsFromUser(int userId) {
 
-        User user = getUserFromStorage(userId);
+        User user = findUserById(userId);
 
-        return user.getFriends().stream()
-                .map(userStorage::get)
-                .collect(Collectors.toList());
+        return userStorage.getFriendsFromUser(userId);
     }
 
     public Collection<User> getCommonFriendsFromUser(int id, int otherId) {
 
-        Set<Integer> user1Friends = getUserFromStorage(id).getFriends();
-        Set<Integer> user2Friends = getUserFromStorage(otherId).getFriends();
+        User user1Friends = findUserById(id);
+        User user2Friends = findUserById(otherId);
 
-        return user1Friends.stream()
-                .filter(user2Friends::contains)
-                .map(userStorage::get)
-                .collect(Collectors.toList());
+        return userStorage.getCommonFriendsFromUser(id, otherId);
     }
 }
