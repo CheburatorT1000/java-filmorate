@@ -27,6 +27,6 @@ class GenreControllerTest {
     @Test
     void getGenreById() {
         Genre genre = genreStorage.findGenreById(4);
-        assertEquals("Thriller", genre.getName());
+        assertEquals("Триллер", genre.getName());
     }
 }
