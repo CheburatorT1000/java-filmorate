@@ -15,10 +15,7 @@ public interface FilmStorage {
     Film update(Film film);
 
     Collection<Film> findAll();
-/*
-    boolean isAdded(int id);
-    boolean isUsersLikeAdded(Film film, User user);
-*/
+
     void putLike(int filmId, int userId);
 
     boolean deleteUsersLike(Film film, User user);

@@ -8,11 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -26,8 +26,7 @@ class UserControllerTest {
             .name("asdasd")
             .birthday(LocalDate.parse("1967-03-01"))
             .build();
-
-
+    
     @Test
     void testSaveWithId1() {
         userService.create(user);

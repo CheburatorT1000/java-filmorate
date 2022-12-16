@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -24,6 +24,7 @@ class GenreControllerTest {
         Collection<Genre> genres = genreStorage.findAll();
         assertEquals(6, genres.size());
     }
+
     @Test
     void getGenreById() {
         Genre genre = genreStorage.findGenreById(4).get();

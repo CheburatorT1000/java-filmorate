@@ -52,7 +52,6 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
-
     @Override
     public Collection<User> findAll() {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY " +
@@ -133,35 +132,6 @@ public class UserDbStorage implements UserStorage {
                 "AND FF.USER_ID = ?);";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, otherId);
     }
-/*
-    @Override
-    public boolean isAdded(int id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM USERS WHERE USER_ID = ?", id);
-
-        if(userRows.next()) {
-            log.info("Найден пользователь: {} {}", userRows.getString("USER_ID"),
-                    userRows.getString("LOGIN"));
-            return true;
-        } else {
-            log.info("Пользователь с идентификатором {} не найден.", id);
-            return false;
-        }
-    }
-    @Override
-    public boolean isFriendAdded(User user, User friend) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM FRIENDS WHERE USER_ID = ? AND " +
-                "FRIEND_ID = ?", friend.getId(), user.getId());
-
-        if(userRows.next()) {
-            log.info("Пользователь {} уже был добавлен в друзья {}", userRows.getString("USER_ID"),
-                    userRows.getString("FRIEND_ID"));
-            return true;
-        } else {
-            log.info("Добавляем пользователя с идентификатором {} в друзья.",
-                    friend.getId());
-            return false;
-        }
-    }*/
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
         return User.builder()
