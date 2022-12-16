@@ -33,7 +33,6 @@ public class UserService {
     public User create(User user) {
 
         log.info("Проверяем user в валидаторах");
-        validateExistenceForPOST(user);
         validateLogin(user);
         user = validateName(user);
 
@@ -44,16 +43,16 @@ public class UserService {
         return userStorage.save(userFromCreator);
     }
 
-    public User put(User user) {
+    public User update(User user) {
 
         log.info("Проверяем user в валидаторах");
-        validateExistenceForPUT(user);
         validateLogin(user);
         user = validateName(user);
 
         User userFromCreator = userCreator(user);
-
         log.info("Обновляем объект в коллекции");
+
+        findUserById(userFromCreator.getId());
         return userStorage.update(userFromCreator);
     }
 
@@ -70,20 +69,6 @@ public class UserService {
         return userFromBuilder;
     }
 
-    public void validateExistenceForPOST(User user) {
-        if (userStorage.isAdded(user.getId())) {
-            log.info("Id пользователя '{}' ", user.getId());
-            throw new ValidationException("Пользователь с таким id уже существует!");
-        }
-    }
-
-    public void validateExistenceForPUT(User user) {
-        if (!userStorage.isAdded(user.getId())) {
-            log.info("Id пользователя '{}' ", user.getId());
-            throw new NotFoundException("Пользователь отсутствует!");
-        }
-    }
-
     public void validateLogin(User user) {
         if (user.getLogin().contains(" ")) {
             log.info("login пользователя '{}' ", user.getLogin());
@@ -98,44 +83,26 @@ public class UserService {
         }
         return user;
     }
+
     // на удаление
     public User findUserById(int id) {
-        if (userStorage.isAdded(id))
-            return userStorage.findUserById(id);
-        else
-            throw new NotFoundException("Пользователь не найден!");
+        return userStorage.findUserById(id).
+                orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
     }
 
     public void addFriend(int id, int friendId) {
-        User user1 = findUserById(id);
-        User friend = findUserById(friendId);
-
-
-        if (!userStorage.isFriendAdded(user1, friend))
-            userStorage.addFriend(user1, friend);
-        else
-            throw new ValidationException("Пользователь уже был добавлен!");
+        userStorage.addFriend(findUserById(id), findUserById(friendId));
     }
 
     public void deleteFriend(int id, int friendId) {
-        User user1 = findUserById(id);
-        User friend = findUserById(friendId);
-
-        userStorage.deleteFriend(user1, friend);
+        userStorage.deleteFriend(findUserById(id), findUserById(friendId));
     }
 
     public Collection<User> getFriendsFromUser(int userId) {
-
-        User user = findUserById(userId);
-
-        return userStorage.getFriendsFromUser(userId);
+        return userStorage.getFriendsFromUser(findUserById(userId).getId());
     }
 
     public Collection<User> getCommonFriendsFromUser(int id, int otherId) {
-
-        User user1Friends = findUserById(id);
-        User user2Friends = findUserById(otherId);
-
-        return userStorage.getCommonFriendsFromUser(id, otherId);
+        return userStorage.getCommonFriendsFromUser(findUserById(id).getId(), findUserById(otherId).getId());
     }
 }

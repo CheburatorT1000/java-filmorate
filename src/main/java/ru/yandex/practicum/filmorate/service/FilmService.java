@@ -36,7 +36,6 @@ public class FilmService {
     public Film save(Film film) {
 
         log.info("Проверяем film в валидаторах");
-        validateExistenceForPOST(film);
         validateDescription(film);
         validateReleaseDate(film);
 
@@ -50,7 +49,6 @@ public class FilmService {
     public Film update(Film film) {
 
         log.info("Проверяем film в валидаторах");
-        validateExistenceForPUT(film);
         validateDescription(film);
         validateReleaseDate(film);
 
@@ -58,7 +56,7 @@ public class FilmService {
         Film filmFromCreator = filmCreator(film);
 
         log.info("Добавляем объект в коллекцию");
-
+        getFilmFromStorage(filmFromCreator.getId());
         return filmStorage.update(filmFromCreator);
     }
 
@@ -74,20 +72,6 @@ public class FilmService {
                 .build();
         log.info("Объект Film создан '{}'", filmFromBuilder.getName());
         return filmFromBuilder;
-    }
-
-    public void validateExistenceForPOST(Film film) {
-        if (filmStorage.isAdded(film.getId())) {
-            log.info("Id фильма '{}' ", film.getId());
-            throw new ValidationException("Фильм с таким id уже существует!");
-        }
-    }
-
-    public void validateExistenceForPUT(Film film) {
-        if (!filmStorage.isAdded(film.getId())) {
-            log.info("Id фильма '{}' ", film.getId());
-            throw new NotFoundException("Фильм с таким id осутствует!");
-        }
     }
 
     public void validateDescription(Film film) {
@@ -106,22 +90,15 @@ public class FilmService {
 
     public Film getFilmFromStorage(int id) {
 
-        if (filmStorage.isAdded(id))
-            return filmStorage.findFilmById(id);
-        else
-            throw new NotFoundException("Фильм не найден!");
+        return filmStorage.findFilmById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм не найден!"));
     }
 
-    public Film giveLike(int filmId, int userId) {
-
+    public Film putLike(int filmId, int userId) {
         Film film = getFilmFromStorage(filmId);
         User user = userService.findUserById(userId);
 
-        if (filmStorage.isUsersLikeAdded(film, user))
-            throw new ValidationException("Лайк от пользователя уже добавлен!");
-        else
-            filmStorage.getUsersLike(filmId, userId);
-
+        filmStorage.putLike(filmId, userId);
         return film;
     }
 
@@ -130,39 +107,11 @@ public class FilmService {
         Film film = getFilmFromStorage(filmId);
         User user = userService.findUserById(userId);
 
-        if (filmStorage.isUsersLikeAdded(film, user))
-            filmStorage.deleteUsersLike(film, user);
-        else
-            throw new NotFoundException("Лайк от пользователя отсутствует!");
-
+        filmStorage.deleteUsersLike(film, user);
         return film;
     }
 
     public Collection<Film> getPopular(int count) {
         return filmStorage.getPopular(count);
-    }
-
-    public Collection<Genre> getAllGenres() {
-        return filmStorage.getAllGenres();
-    }
-
-
-    public Collection<MPA> getAllMPA() {
-        return filmStorage.getAllMPA();
-    }
-
-    public MPA getMPAById(int id) {
-
-        if (filmStorage.isMpaAdded(id))
-            return filmStorage.getMPAById(id);
-        else
-            throw new NotFoundException("Рейтинг с таким id отсутствует");
-    }
-    public Genre getGenreById(int id) {
-
-        if (filmStorage.isGenreAdded(id))
-            return filmStorage.getGenreById(id);
-        else
-            throw new NotFoundException("Жанр с таким id отсутствует");
     }
 }

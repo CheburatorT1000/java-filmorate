@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -24,9 +25,22 @@ public class GenreDb implements GenreStorage {
     }
 
     @Override
-    public Genre findGenreById(int id) {
+    public Optional<Genre> findGenreById(int id) {
         String sqlQuery = "SELECT GENRE_ID, NAME FROM GENRE WHERE GENRE_ID = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);
+
+        SqlRowSet genreRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        if(genreRows.next()) {
+             Genre genre = Genre.builder()
+                     .id(genreRows.getInt("GENRE_ID"))
+                     .name(genreRows.getString("NAME"))
+                     .build();
+            log.info("Найден жанр {} с названием {} ", genreRows.getInt("GENRE_ID"),
+                    genreRows.getString("NAME"));
+             return Optional.of(genre);
+        } else {
+            log.info("Жанр с id {} не найден", id);
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -37,23 +51,9 @@ public class GenreDb implements GenreStorage {
 
     @Override
     public Genre mapRowToGenre(ResultSet resultSet, int i) throws SQLException {
-        return Genre.builder()
+            return Genre.builder()
                 .id(resultSet.getInt("GENRE_ID"))
                 .name(resultSet.getString("NAME"))
                 .build();
-    }
-
-    @Override
-    public boolean isAdded(int id) {
-        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT GENRE_ID, NAME FROM GENRE WHERE GENRE_ID = ?", id);
-
-        if (mpaRows.next()) {
-            log.info("Найден жанр: {} {}", mpaRows.getString("GENRE_ID"),
-                    mpaRows.getString("NAME"));
-            return true;
-        } else {
-            log.info("Жанр с идентификатором {} не найден.", id);
-            return false;
-        }
     }
 }

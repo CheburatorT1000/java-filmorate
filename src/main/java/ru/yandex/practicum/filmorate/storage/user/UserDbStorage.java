@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -30,12 +31,27 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User findUserById(int id) {
+    public Optional<User> findUserById(int id) {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY " +
                 "FROM USERS " +
                 "WHERE USER_ID = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        if(userRows.next()) {
+            User user = User.builder()
+                    .id(userRows.getInt("USER_ID"))
+                    .email(userRows.getString("EMAIL"))
+                    .login(userRows.getString("LOGIN"))
+                    .name(userRows.getString("NAME"))
+                    .birthday(LocalDate.parse(userRows.getString("BIRTHDAY")))
+                    .build();
+            log.info("Найден пользователь {} с именем {} ", userRows.getInt("USER_ID"),
+                    userRows.getString("LOGIN"));
+            return Optional.of(user);
+        } else {
+            return Optional.empty();
+        }
     }
+
 
     @Override
     public Collection<User> findAll() {
@@ -117,7 +133,7 @@ public class UserDbStorage implements UserStorage {
                 "AND FF.USER_ID = ?);";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, otherId);
     }
-
+/*
     @Override
     public boolean isAdded(int id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM USERS WHERE USER_ID = ?", id);
@@ -145,7 +161,7 @@ public class UserDbStorage implements UserStorage {
                     friend.getId());
             return false;
         }
-    }
+    }*/
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
         return User.builder()

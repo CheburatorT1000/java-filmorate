@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.util.Collection;
 
@@ -16,19 +17,19 @@ import java.util.Collection;
 public class GenreController {
 
     @Autowired
-    private final FilmService filmService;
+    private final GenreService genreService;
 
-    public GenreController(FilmService filmService) {
-        this.filmService = filmService;
+    public GenreController(GenreService genreService) {
+        this.genreService = genreService;
     }
 
     @GetMapping
     public Collection<Genre> getAllGenres() {
-        return filmService.getAllGenres();
+        return genreService.getAllGenres();
     }
 
     @GetMapping("/{id}")
     public Genre getGenreById(@PathVariable int id) {
-        return filmService.getGenreById(id);
+        return genreService.getGenreById(id);
     }
 }

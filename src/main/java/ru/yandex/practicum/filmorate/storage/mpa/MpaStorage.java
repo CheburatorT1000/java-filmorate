@@ -5,13 +5,13 @@ import ru.yandex.practicum.filmorate.model.MPA;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface MpaStorage {
-    MPA findMpaById(int id);
+    Optional<MPA> findMpaById(int id);
 
     Collection<MPA> findAll();
 
     MPA mapRowToMpa(ResultSet resultSet, int i) throws SQLException;
 
-    boolean isAdded(int id);
 }

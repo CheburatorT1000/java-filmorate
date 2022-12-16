@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,18 +33,25 @@ class FilmControllerTest {
             .mpa(mpa)
             .build();
 
-    @BeforeEach
-    void prepareForTest() {
-    }
-
     @Test
     void shouldSaveWithId1() {
         filmService.save(film);
         assertEquals(1, filmService.getFilmFromStorage(1).getId());
+        assertEquals(1, filmService.findAll().size());
+        assertEquals(1, filmService.getPopular(10).size());
+        assertEquals(0, filmService.getFilmFromStorage(1).getGenres().size());
     }
 
     @Test
-    void ShouldFailGetFilmById() {
+    void shouldThrowNotFoundException() {
         assertThrows(NotFoundException.class, () -> filmService.getFilmFromStorage(999));
+        film.setId(345);
+        assertThrows(NotFoundException.class, () -> filmService.update(film));
+    }
+
+    @Test
+    void shouldFailUpdateFilm() {
+        film.setId(345);
+        assertThrows(NotFoundException.class, () -> filmService.update(film));
     }
 }

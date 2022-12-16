@@ -29,13 +29,21 @@ class UserControllerTest {
 
 
     @Test
-    void ShouldSaveWithId1() {
+    void testSaveWithId1() {
         userService.create(user);
+
         assertEquals(1, userService.findUserById(1).getId());
+        assertEquals(1, userService.findAll().size());
+
+        user.setId(1);
+        user.setName("Test");
+        userService.update(user);
+
+        assertEquals("Test", userService.findUserById(1).getName());
     }
 
     @Test
-    void ShouldFailGetUserById() {
+    void shouldThrowNotFoundException() {
         assertThrows(NotFoundException.class, () -> userService.findUserById(999));
     }
 }

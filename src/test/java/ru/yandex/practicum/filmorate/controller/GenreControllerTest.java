@@ -20,13 +20,13 @@ class GenreControllerTest {
     private final GenreStorage genreStorage;
 
     @Test
-    void getAllGenres() {
+    void testGetAllGenres() {
         Collection<Genre> genres = genreStorage.findAll();
         assertEquals(6, genres.size());
     }
     @Test
     void getGenreById() {
-        Genre genre = genreStorage.findGenreById(4);
+        Genre genre = genreStorage.findGenreById(4).get();
         assertEquals("Триллер", genre.getName());
     }
 }

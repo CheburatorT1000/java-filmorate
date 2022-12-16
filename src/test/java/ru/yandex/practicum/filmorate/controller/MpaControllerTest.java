@@ -33,7 +33,7 @@ class MpaControllerTest {
 
     @Test
     void getMPAById() {
-        MPA mpa = mpaStorage.findMpaById(4);
+        MPA mpa = mpaStorage.findMpaById(4).get();
         assertEquals("R", mpa.getName());
     }
 }

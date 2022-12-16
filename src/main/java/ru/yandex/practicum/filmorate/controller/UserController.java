@@ -31,7 +31,7 @@ public class UserController {
 
     @PutMapping
     public User put(@Valid @RequestBody User user) {
-        return userService.put(user);
+        return userService.update(user);
     }
 
     @GetMapping("{id}")

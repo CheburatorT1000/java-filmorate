@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -23,9 +24,22 @@ public class MpaDb implements MpaStorage {
     }
 
     @Override
-    public MPA findMpaById(int id) {
+    public Optional<MPA> findMpaById(int id) {
         String sqlQuery = "SELECT RATE_ID, NAME FROM MPA_RATE WHERE RATE_ID = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);
+
+        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        if(mpaRows.next()) {
+            MPA mpa = MPA.builder()
+                    .id(mpaRows.getInt("RATE_ID"))
+                    .name(mpaRows.getString("NAME"))
+                    .build();
+            log.info("Найден рейтинг {} с названием {} ", mpaRows.getInt("RATE_ID"),
+                    mpaRows.getString("NAME"));
+            return Optional.of(mpa);
+        } else {
+            log.info("Рейтинг с id {} не найден", id);
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -40,18 +54,5 @@ public class MpaDb implements MpaStorage {
                 .id(resultSet.getInt("RATE_ID"))
                 .name(resultSet.getString("NAME"))
                 .build();
-    }
-    @Override
-    public boolean isAdded(int id) {
-        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT RATE_ID, NAME FROM MPA_RATE WHERE RATE_ID = ?", id);
-
-        if (mpaRows.next()) {
-            log.info("Найден рейтинг: {} {}", mpaRows.getString("RATE_ID"),
-                    mpaRows.getString("NAME"));
-            return true;
-        } else {
-            log.info("Рейтинг с идентификатором {} не найден.", id);
-            return false;
-        }
     }
 }
