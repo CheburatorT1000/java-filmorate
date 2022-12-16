@@ -26,7 +26,7 @@ class UserControllerTest {
             .name("asdasd")
             .birthday(LocalDate.parse("1967-03-01"))
             .build();
-    
+
     @Test
     void testSaveWithId1() {
         userService.create(user);
