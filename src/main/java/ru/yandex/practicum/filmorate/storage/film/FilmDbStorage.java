@@ -30,14 +30,12 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final MpaService mpaService;
     private final GenreService genreService;
     private final UserDbStorage userDbStorage;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, GenreService genreService, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaService = mpaService;
         this.genreService = genreService;
         this.userDbStorage = userDbStorage;
     }
@@ -127,13 +125,16 @@ public class FilmDbStorage implements FilmStorage {
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         return Film.builder()
-                .id(resultSet.getInt("FILM_ID"))
-                .name((resultSet.getString("NAME")))
-                .description(resultSet.getString("DESCRIPTION"))
-                .duration(resultSet.getLong("DURATION"))
-                .releaseDate(resultSet.getObject("RELEASE_DATE", LocalDate.class))
-                .mpa(mpaService.getMPAById(resultSet.getInt("RATE_ID")))
-                .genres(getGenresByFilmId(resultSet.getInt("FILM_ID")))
+                .id(resultSet.getInt("FILMS.FILM_ID"))
+                .name((resultSet.getString("FILMS.NAME")))
+                .description(resultSet.getString("FILMS.DESCRIPTION"))
+                .duration(resultSet.getLong("FILMS.DURATION"))
+                .releaseDate(resultSet.getObject("FILMS.RELEASE_DATE", LocalDate.class))
+                .mpa(MPA.builder()
+                        .id(resultSet.getInt("MPA_RATE.RATE_ID"))
+                        .name(resultSet.getString("MPA_RATE.NAME"))
+                        .build())
+                .genres(getGenresByFilmId(resultSet.getInt("FILMS.FILM_ID")))
                 .build();
     }
 
@@ -163,7 +164,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAll() {
-        String sqlQuery = "SELECT * FROM FILMS";
+        String sqlQuery = "SELECT * " +
+                "FROM FILMS F " +
+                "JOIN MPA_RATE MR ON F.RATE_ID = MR.RATE_ID";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
     }
 
@@ -188,9 +191,10 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Collection<Film> getPopular(int count) {
         String sqlQuery = "SELECT F.FILM_ID, " +
-                "F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.RATE_ID, COUNT(FL.FILM_ID) " +
+                "F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.RATE_ID, MR.*, COUNT(FL.FILM_ID) " +
                 "FROM FILMS AS F " +
                 "LEFT JOIN FILM_LIKES AS FL ON F.FILM_ID = FL.FILM_ID " +
+                "JOIN MPA_RATE MR ON F.RATE_ID = MR.RATE_ID " +
                 "GROUP BY F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.RATE_ID " +
                 "ORDER BY COUNT(FL.FILM_ID) DESC " +
                 "LIMIT ?";
