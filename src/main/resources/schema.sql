@@ -17,12 +17,12 @@ create table IF NOT EXISTS FRIENDS
     constraint FRIENDS_USERS_USER_ID_FK_2
         foreign key (FRIEND_ID) references USERS
 );
-create table IF NOT EXISTS MPA_RATE
+create table IF NOT EXISTS MPA
 (
-    RATE_ID INTEGER auto_increment,
+    MPA_ID INTEGER auto_increment,
     NAME    CHARACTER VARYING(50) not null,
-    constraint "MPA_RATE_pk"
-        primary key (RATE_ID)
+    constraint "MPA_pk"
+        primary key (MPA_ID)
 );
 create table IF NOT EXISTS FILMS
 (
@@ -31,11 +31,11 @@ create table IF NOT EXISTS FILMS
     DESCRIPTION  CHARACTER VARYING(200) not null,
     RELEASE_DATE DATE                   not null,
     DURATION     INTEGER                not null,
-    RATE_ID      INTEGER                not null,
+    MPA_ID      INTEGER                not null,
     constraint FILMS_PK
         primary key (FILM_ID),
-    constraint FILMS_MPA_RATE_RATE_ID_FK
-        foreign key (RATE_ID) references MPA_RATE
+    constraint FILMS_MPA_MPA_ID_FK
+        foreign key (MPA_ID) references MPA
 );
 create table IF NOT EXISTS FILM_LIKES
 (

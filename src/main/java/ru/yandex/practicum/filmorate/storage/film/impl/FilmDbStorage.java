@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.MpaService;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -36,7 +36,7 @@ public class FilmDbStorage implements FilmStorage {
     private final UserDbStorage userDbStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, NamedParameterJdbcTemplate namedJdbcTemplate, GenreService genreService, UserDbStorage userDbStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate, GenreService genreService, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedJdbcTemplate = namedJdbcTemplate;
         this.genreService = genreService;
@@ -45,7 +45,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film save(Film film) {
-        String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATE_ID) " +
+        String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) " +
                 "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -78,10 +78,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> findFilmById(int id) {
-        String sqlQuery = "SELECT F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.RATE_ID, " +
-                "MR.RATE_ID, MR.NAME " +
+        String sqlQuery = "SELECT F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA_ID, " +
+                "M.MPA_ID, M.NAME " +
                 "FROM FILMS AS F " +
-                "JOIN MPA_RATE AS MR ON F.RATE_ID = MR.RATE_ID " +
+                "JOIN MPA AS M ON F.MPA_ID = M.MPA_ID " +
                 "WHERE FILM_ID = ?";
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
 
@@ -134,8 +134,8 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(resultSet.getLong("FILMS.DURATION"))
                 .releaseDate(resultSet.getObject("FILMS.RELEASE_DATE", LocalDate.class))
                 .mpa(MPA.builder()
-                        .id(resultSet.getInt("MPA_RATE.RATE_ID"))
-                        .name(resultSet.getString("MPA_RATE.NAME"))
+                        .id(resultSet.getInt("MPA.MPA_ID"))
+                        .name(resultSet.getString("MPA.NAME"))
                         .build())
                 .genres(new LinkedHashSet<>())
                 .build();
@@ -148,7 +148,7 @@ public class FilmDbStorage implements FilmStorage {
                 "DESCRIPTION = ?, " +
                 "RELEASE_DATE = ?, " +
                 "DURATION = ?, " +
-                "RATE_ID = ?" +
+                "MPA_ID = ?" +
                 "WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery,
                 film.getName(),
@@ -193,7 +193,7 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> findAll() {
         String sqlQuery = "SELECT * " +
                 "FROM FILMS F " +
-                "JOIN MPA_RATE MR ON F.RATE_ID = MR.RATE_ID";
+                "JOIN MPA M ON F.MPA_ID = M.MPA_ID";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
         loadGenres(films);
@@ -221,10 +221,10 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(int count) {
 
-        String sqlQuery = "SELECT FILMS.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.RATE_ID, M.NAME " +
+        String sqlQuery = "SELECT FILMS.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
                 "FROM FILMS " +
                 "LEFT JOIN FILM_LIKES FL ON FILMS.FILM_ID = FL.FILM_ID " +
-                "LEFT JOIN MPA_RATE M on M.RATE_ID = FILMS.RATE_ID " +
+                "LEFT JOIN MPA M on M.MPA_ID = FILMS.MPA_ID " +
                 "GROUP BY FILMS.FILM_ID, FL.FILM_ID IN ( " +
                 "SELECT FILM_ID " +
                 "FROM FILM_LIKES " +

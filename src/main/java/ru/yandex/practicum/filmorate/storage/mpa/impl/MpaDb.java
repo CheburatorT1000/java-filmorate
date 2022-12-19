@@ -25,15 +25,15 @@ public class MpaDb implements MpaStorage {
 
     @Override
     public Optional<MPA> findMpaById(int id) {
-        String sqlQuery = "SELECT RATE_ID, NAME FROM MPA_RATE WHERE RATE_ID = ?";
+        String sqlQuery = "SELECT MPA_ID, NAME FROM MPA WHERE MPA_ID = ?";
 
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if(mpaRows.next()) {
             MPA mpa = MPA.builder()
-                    .id(mpaRows.getInt("RATE_ID"))
+                    .id(mpaRows.getInt("MPA_ID"))
                     .name(mpaRows.getString("NAME"))
                     .build();
-            log.info("Найден рейтинг {} с названием {} ", mpaRows.getInt("RATE_ID"),
+            log.info("Найден рейтинг {} с названием {} ", mpaRows.getInt("MPA_ID"),
                     mpaRows.getString("NAME"));
             return Optional.of(mpa);
         } else {
@@ -44,14 +44,14 @@ public class MpaDb implements MpaStorage {
 
     @Override
     public Collection<MPA> findAll() {
-        String sqlQuery = "SELECT RATE_ID, NAME FROM MPA_RATE";
+        String sqlQuery = "SELECT MPA_ID, NAME FROM MPA";
         return jdbcTemplate.query(sqlQuery, this::mapRowToMpa);
     }
 
     @Override
     public MPA mapRowToMpa(ResultSet resultSet, int i) throws SQLException {
         return MPA.builder()
-                .id(resultSet.getInt("RATE_ID"))
+                .id(resultSet.getInt("MPA_ID"))
                 .name(resultSet.getString("NAME"))
                 .build();
     }
