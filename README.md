@@ -1,2 +1,2 @@
-# java-filmorate
-Template repository for Filmorate project.
+# database diagram
+![Alt text](src/main/resources/db_diagram/db_diagram.png?raw=true "Title")

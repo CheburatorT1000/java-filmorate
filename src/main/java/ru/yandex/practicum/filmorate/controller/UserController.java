@@ -31,12 +31,12 @@ public class UserController {
 
     @PutMapping
     public User put(@Valid @RequestBody User user) {
-        return userService.put(user);
+        return userService.update(user);
     }
 
     @GetMapping("{id}")
     public User getById(@PathVariable int id) {
-        return userService.getUserFromStorage(id);
+        return userService.findUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

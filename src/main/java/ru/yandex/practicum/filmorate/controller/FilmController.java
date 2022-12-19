@@ -26,7 +26,7 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        return filmService.create(film);
+        return filmService.save(film);
     }
 
     @PutMapping
@@ -42,9 +42,8 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public Film putLike(@PathVariable("id") int filmId,
                         @PathVariable int userId) {
-        return filmService.giveLike(filmId, userId);
+        return filmService.putLike(filmId, userId);
     }
-
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable("id") int filmId,
                            @PathVariable int userId) {
@@ -55,7 +54,6 @@ public class FilmController {
     public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopular(count);
     }
-
 }
 
 
