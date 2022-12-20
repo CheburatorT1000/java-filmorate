@@ -106,6 +106,5 @@ public class UserService {
 
     public void deleteById(int userId) {
         userStorage.deleteById(userId);
-        log.info("Удалён пользователь с id: '{}' имя: '{}'", userId, findUserById(userId));
     }
 }

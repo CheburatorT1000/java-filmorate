@@ -137,27 +137,10 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, otherId);
     }
 
-    /*
-        @Override
-        public Optional<User> deleteById(int userId) {
-            String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
-            jdbcTemplate.update(sqlQuery, userId);
-            String sqlQueryDeleteFriend = "DELETE FROM FRIENDS WHERE USER_ID = ?";
-            jdbcTemplate.update(sqlQueryDeleteFriend, userId);
-            String sqlQueryDeleteLike = "DELETE FROM FILM_LIKES WHERE USER_ID = ?";
-            jdbcTemplate.update(sqlQueryDeleteLike, userId);
-            return null;
-        }
-
-    */
     @Override
     public void deleteById(int userId) {
         String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
-        try {
-            jdbcTemplate.update(sqlQuery, userId);
-        } catch (DataAccessException exception) {
-            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
-        }
+        jdbcTemplate.update(sqlQuery, userId);
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
