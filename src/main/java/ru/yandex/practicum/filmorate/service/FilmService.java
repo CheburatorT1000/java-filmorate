@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -110,5 +111,12 @@ public class FilmService {
 
     public Collection<Film> getPopular(int count) {
         return filmStorage.getPopular(count);
+    }
+
+    public Optional<Film> deleteById(int filmId) {
+        Film film = getFilmFromStorage(filmId);
+        filmStorage.deleteById(filmId);
+        log.info("Фильм удален с id: '{}' название '{}'", filmId, film.getName());
+        return Optional.of(film);
     }
 }

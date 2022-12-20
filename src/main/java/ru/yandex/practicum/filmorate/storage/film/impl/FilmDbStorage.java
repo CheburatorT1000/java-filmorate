@@ -236,4 +236,14 @@ public class FilmDbStorage implements FilmStorage {
 
         return films;
     }
+
+    @Override
+    public void deleteById(int filmId) {
+        String sqlQueryDeleteGenres = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQueryDeleteGenres, filmId);
+        String sqlQueryDeleteLike = "DELETE FROM FILM_LIKES WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQueryDeleteLike, filmId);
+        String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, filmId);
+    }
 }

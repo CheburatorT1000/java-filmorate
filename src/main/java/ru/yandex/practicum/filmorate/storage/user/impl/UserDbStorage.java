@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,6 +11,8 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import org.springframework.dao.DataAccessException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -37,7 +40,7 @@ public class UserDbStorage implements UserStorage {
                 "FROM USERS " +
                 "WHERE USER_ID = ?";
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if(userRows.next()) {
+        if (userRows.next()) {
             User user = User.builder()
                     .id(userRows.getInt("USER_ID"))
                     .email(userRows.getString("EMAIL"))
@@ -132,6 +135,29 @@ public class UserDbStorage implements UserStorage {
                 "WHERE F.USER_ID = ?" +
                 "AND FF.USER_ID = ?);";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, otherId);
+    }
+
+    /*
+        @Override
+        public Optional<User> deleteById(int userId) {
+            String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
+            jdbcTemplate.update(sqlQuery, userId);
+            String sqlQueryDeleteFriend = "DELETE FROM FRIENDS WHERE USER_ID = ?";
+            jdbcTemplate.update(sqlQueryDeleteFriend, userId);
+            String sqlQueryDeleteLike = "DELETE FROM FILM_LIKES WHERE USER_ID = ?";
+            jdbcTemplate.update(sqlQueryDeleteLike, userId);
+            return null;
+        }
+
+    */
+    @Override
+    public void deleteById(int userId) {
+        String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
+        try {
+            jdbcTemplate.update(sqlQuery, userId);
+        } catch (DataAccessException exception) {
+            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
+        }
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
