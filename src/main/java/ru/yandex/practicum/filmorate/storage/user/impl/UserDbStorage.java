@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.user.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -11,8 +10,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import org.springframework.dao.DataAccessException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -24,7 +21,6 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-@Qualifier("userDb")
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -99,10 +95,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void addFriend(User user, User friend) {
-
         String sqlQuery = "INSERT INTO FRIENDS (USER_ID, FRIEND_ID) " +
                 "VALUES (?, ?)";
-
         jdbcTemplate.update(sqlQuery,
                 user.getId(),
                 friend.getId());
@@ -111,7 +105,6 @@ public class UserDbStorage implements UserStorage {
     @Override
     public boolean deleteFriend(User user, User friend) {
         String sqlQuery = "DELETE FROM FRIENDS WHERE FRIEND_ID = ?";
-
         return jdbcTemplate.update(sqlQuery,
                 friend.getId()) > 0;
     }
@@ -152,5 +145,4 @@ public class UserDbStorage implements UserStorage {
                 .birthday(resultSet.getObject("BIRTHDAY", LocalDate.class))
                 .build();
     }
-
 }

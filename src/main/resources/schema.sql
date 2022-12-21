@@ -8,8 +8,8 @@ create table IF NOT EXISTS USERS
     BIRTHDAY DATE                  not null,
     constraint USERS_PK
         primary key (USER_ID)
-
 );
+
 create table IF NOT EXISTS FRIENDS
 (
     USER_ID   INTEGER not null,
@@ -21,14 +21,15 @@ create table IF NOT EXISTS FRIENDS
         foreign key (FRIEND_ID) references USERS
             ON DELETE CASCADE
 );
+
 create table IF NOT EXISTS MPA
 (
     MPA_ID INTEGER auto_increment,
     NAME   CHARACTER VARYING(50) not null,
     constraint "MPA_pk"
         primary key (MPA_ID)
-
 );
+
 create table IF NOT EXISTS FILMS
 (
     FILM_ID      INTEGER auto_increment,
@@ -43,6 +44,7 @@ create table IF NOT EXISTS FILMS
         foreign key (MPA_ID) references MPA
             ON DELETE CASCADE
 );
+
 create table IF NOT EXISTS FILM_LIKES
 (
     FILM_ID INTEGER not null,
@@ -54,6 +56,7 @@ create table IF NOT EXISTS FILM_LIKES
         foreign key (USER_ID) references USERS
             ON DELETE CASCADE
 );
+
 create table IF NOT EXISTS GENRE
 (
     GENRE_ID INTEGER auto_increment,
@@ -62,6 +65,7 @@ create table IF NOT EXISTS GENRE
         primary key (GENRE_ID)
 
 );
+
 create table IF NOT EXISTS FILM_GENRE
 (
     FILM_ID  INTEGER not null,
