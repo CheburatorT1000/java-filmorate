@@ -14,6 +14,10 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.math.BigInteger;
 import java.util.Collection;
 
+import static ru.yandex.practicum.filmorate.model.enums.EventType.FRIEND;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -88,11 +92,14 @@ public class UserService {
     }
 
     public void addFriend(int id, int friendId) {
+
         userStorage.addFriend(findUserById(id), findUserById(friendId));
+        feedService.addFeed(friendId, id, FRIEND, ADD);
     }
 
     public void deleteFriend(int id, int friendId) {
         userStorage.deleteFriend(findUserById(id), findUserById(friendId));
+        feedService.addFeed(friendId, id, FRIEND, REMOVE);
     }
 
     public Collection<User> getFriendsFromUser(int userId) {

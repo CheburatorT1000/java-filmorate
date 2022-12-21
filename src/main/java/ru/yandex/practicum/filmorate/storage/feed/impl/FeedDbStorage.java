@@ -30,6 +30,7 @@ public class FeedDbStorage implements FeedStorage {
     @Override
     public Collection<Feed> getFeedByUserId(Integer id) {
         String sqlQuery = "SELECT * FROM FEED WHERE USER_ID = ? ORDER BY TIME_STAMP ASC";
+
         return jdbcTemplate.query(sqlQuery, this::mapRowToFeed, id);
     }
 
@@ -38,6 +39,7 @@ public class FeedDbStorage implements FeedStorage {
                         EventType eventType, Operation operation) {
         String sqlQuery = "INSERT INTO FEED(ENTITY_ID, USER_ID, TIME_STAMP, EVENT_TYPE, OPERATION) " +
                 "VALUES (?, ?, ?, ?, ?)";
+
         jdbcTemplate.update(sqlQuery, entityId, userId, timeStamp, eventType.toString(), operation.toString());
     }
 

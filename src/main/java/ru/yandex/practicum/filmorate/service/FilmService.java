@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,21 +10,23 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+
 import java.time.LocalDate;
 import java.util.Collection;
 
+import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
+
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final FeedService feedService;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
-        this.filmStorage = filmStorage;
-        this.userService = userService;
-    }
 
     public Collection<Film> findAll() {
         log.info("Выводим список всех фильмов");
@@ -96,6 +99,7 @@ public class FilmService {
         User user = userService.findUserById(userId);
 
         filmStorage.putLike(filmId, userId);
+        feedService.addFeed(filmId, userId, LIKE, ADD);
         return film;
     }
 
@@ -105,6 +109,7 @@ public class FilmService {
         User user = userService.findUserById(userId);
 
         filmStorage.deleteUsersLike(film, user);
+        feedService.addFeed(filmId, userId, LIKE, REMOVE);
         return film;
     }
 
