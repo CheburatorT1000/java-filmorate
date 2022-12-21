@@ -7,14 +7,14 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
     private final UserService userService;
-
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -60,5 +60,10 @@ public class UserController {
     public Collection<User> getCommonFriendsFromUser(@PathVariable int id,
                                                      @PathVariable int otherId) {
         return userService.getCommonFriendsFromUser(id, otherId);
+    }
+
+    @DeleteMapping("{userId}")
+    public void deleteById(@PathVariable int userId) {
+        userService.deleteById(userId);
     }
 }

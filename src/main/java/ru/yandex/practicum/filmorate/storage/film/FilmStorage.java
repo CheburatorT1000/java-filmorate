@@ -21,4 +21,8 @@ public interface FilmStorage {
     boolean deleteUsersLike(Film film, User user);
 
     Collection<Film> getPopular(int count);
+
+    void deleteById(int filmId);
+
+
 }

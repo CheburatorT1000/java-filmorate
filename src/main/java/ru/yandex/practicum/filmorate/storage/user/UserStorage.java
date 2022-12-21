@@ -23,4 +23,6 @@ public interface UserStorage {
 
     Collection<User> getCommonFriendsFromUser(int id, int otherId);
 
+    void deleteById(int userId);
+
 }
