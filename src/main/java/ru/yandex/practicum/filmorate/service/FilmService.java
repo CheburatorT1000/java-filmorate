@@ -59,6 +59,7 @@ public class FilmService {
     }
 
     public Film filmCreator(Film film) {
+
         Film filmFromBuilder = Film.builder()
                 .id(film.getId())
                 .name(film.getName())
@@ -87,12 +88,12 @@ public class FilmService {
     }
 
     public Film getFilmFromStorage(int id) {
-
         return filmStorage.findFilmById(id)
                 .orElseThrow(() -> new NotFoundException("Фильм не найден!"));
     }
 
     public Film putLike(int filmId, int userId) {
+
         Film film = getFilmFromStorage(filmId);
         User user = userService.findUserById(userId);
 
@@ -113,10 +114,8 @@ public class FilmService {
         return filmStorage.getPopular(count);
     }
 
-    public Optional<Film> deleteById(int filmId) {
-        Film film = getFilmFromStorage(filmId);
+    public void deleteById(int filmId) {
         filmStorage.deleteById(filmId);
-        log.info("Фильм удален с id: '{}' название '{}'", filmId, film.getName());
-        return Optional.of(film);
+        log.info("Фильм удален с id: '{}'", filmId);
     }
 }
