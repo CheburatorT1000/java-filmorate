@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
-
 import java.util.Collection;
 
 @Slf4j
@@ -17,7 +16,6 @@ public class DirectorService {
 
     @Autowired
     public DirectorService(DirectorStorage directorStorage) {
-
         this.directorStorage = directorStorage;
     }
 
@@ -35,7 +33,6 @@ public class DirectorService {
     public Director update(Director director) {
         Director directorFromCreator = directorCreator(director);
         log.info("Обновляем режиссера в коллекции");
-
         findDirectorById(directorFromCreator.getId());
         return directorStorage.update(directorFromCreator);
     }

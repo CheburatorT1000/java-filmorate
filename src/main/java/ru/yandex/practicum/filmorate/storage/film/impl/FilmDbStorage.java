@@ -304,20 +304,34 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         log.info("Собираем фильмы");
-
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
+        loadGenres(films);
+        loadDirectors(films);
         //TODO
 
-        return null;
+        return films;
     }
 
     private String queryByYear() {
-        //TODO
-        return  null;
+
+        String sqlQuery = "SELECT * FROM films f "
+                + "JOIN mpa m ON f.mpa_id = m.mpa_id "
+                + "WHERE f.film_id IN (SELECT film_id FROM film_director WHERE director_id = ?) "
+                + "ORDER BY EXTRACT(YEAR FROM release_date)";
+        return  sqlQuery;
     }
 
     public String queryByLikes() {
-        //TODO
-        return null;
+        String sqlQuery =
+                "SELECT count(*) , fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
+                + "fi.duration, m.name , m.mpa_id  FROM films fi "
+                + "JOIN mpa m ON fi.mpa_id = m.mpa_id "
+                + "LEFT JOIN film_likes fl on fl.film_id = fi.film_id "
+                + "WHERE fi.film_id IN (SELECT film_id FROM film_director WHERE director_id = ?) "
+                + "group by fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
+                + "fi.duration, m.name , m.mpa_id "
+                + "ORDER BY count(*) desc" ;
+        return sqlQuery;
     }
 
 }
