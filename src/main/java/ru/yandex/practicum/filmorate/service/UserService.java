@@ -1,26 +1,26 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.math.BigInteger;
 import java.util.Collection;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserStorage userStorage;
-
-    @Autowired
-    public UserService(@Qualifier("userDb") UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    private final FeedService feedService;
 
     public Collection<User> findAll() {
         log.info("Выводим список всех пользователей");
@@ -101,5 +101,9 @@ public class UserService {
 
     public Collection<User> getCommonFriendsFromUser(int id, int otherId) {
         return userStorage.getCommonFriendsFromUser(findUserById(id).getId(), findUserById(otherId).getId());
+    }
+
+    public Collection<Feed>  getFeedByUserId(Integer id) {
+        return feedService.getFeedByUserId(id);
     }
 }

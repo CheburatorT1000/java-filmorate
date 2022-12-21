@@ -1,3 +1,5 @@
+DROP ALL OBJECTS;
+
 create table IF NOT EXISTS USERS
 (
     USER_ID  INTEGER auto_increment,
@@ -61,4 +63,18 @@ create table IF NOT EXISTS FILM_GENRE
         foreign key (FILM_ID) references FILMS,
     constraint FILM_GENRE_GENRE_GENRE_ID_FK
         foreign key (GENRE_ID) references GENRE
+);
+
+create table IF NOT EXISTS FEED
+(
+    EVENT_ID   INTEGER auto_increment,
+    ENTITY_ID  INTEGER not null,
+    USER_ID    INTEGER not null,
+    TIME_STAMP INTEGER not null,
+    EVENT_TYPE CHARACTER VARYING(10) not null,
+    OPERATION  CHARACTER VARYING(10) not null,
+    constraint "FEED_pk"
+        primary key (EVENT_ID),
+    constraint FEED_USERS_USER_ID_FK
+        foreign key (USER_ID) references USERS
 );
