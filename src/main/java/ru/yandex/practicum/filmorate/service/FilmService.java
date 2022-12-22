@@ -1,30 +1,28 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+
 import java.util.Optional;
+
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserService userService;
-
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
-        this.filmStorage = filmStorage;
-        this.userService = userService;
-    }
+    private final DirectorService directorService;
 
     public Collection<Film> findAll() {
         log.info("Выводим список всех фильмов");
@@ -68,6 +66,7 @@ public class FilmService {
                 .duration(film.getDuration())
                 .mpa(film.getMpa())
                 .genres(film.getGenres())
+                .directors(film.getDirectors())
                 .build();
         log.info("Объект Film создан '{}'", filmFromBuilder.getName());
         return filmFromBuilder;
@@ -95,7 +94,7 @@ public class FilmService {
     public Film putLike(int filmId, int userId) {
 
         Film film = getFilmFromStorage(filmId);
-        User user = userService.findUserById(userId);
+        userService.findUserById(userId);
 
         filmStorage.putLike(filmId, userId);
         return film;
@@ -114,8 +113,15 @@ public class FilmService {
         return filmStorage.getPopular(count);
     }
 
+    public List<Film> getSortedDirectorsFilms(int id, String sortBy) {
+        List<Film> films;
+        directorService.findDirectorById(id);
+        films = filmStorage.getSortedDirectorsFilms(id, sortBy);
+        return films;
+    }
     public void deleteById(int filmId) {
         filmStorage.deleteById(filmId);
         log.info("Фильм удален с id: '{}'", filmId);
+
     }
 }
