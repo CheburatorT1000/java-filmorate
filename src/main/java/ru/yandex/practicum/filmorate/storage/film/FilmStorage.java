@@ -24,6 +24,6 @@ public interface FilmStorage {
     Collection<Film> getPopular(int count);
 
     void deleteById(int filmId);
-     Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId);
+    Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId);
 
 }

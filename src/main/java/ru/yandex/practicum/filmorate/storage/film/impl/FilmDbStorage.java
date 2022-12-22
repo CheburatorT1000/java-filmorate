@@ -240,12 +240,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId) {
-        String sql = "SELECT * FROM FILMS, MPA " +
+        String sql = "SELECT * FROM FILMS " +
+                "JOIN MPA ON MPA.MPA_ID = FILMS.MPA_ID " +
                 "WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ? " +
                 "AND FILM_ID NOT IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ?))";
             try {
                 return jdbcTemplate.query
-                        (sql, (rs, rowNum) -> findFilmById(rs.getInt("FILM_ID")).orElseThrow(),
+                        (sql, (rs, rowNum) -> findFilmById(rs.getInt("FILMS.FILM_ID")).orElseThrow(),
                                 userWithCommonLikesId, userWantsRecomId);
             } catch (EmptyResultDataAccessException exception) {
                 return new ArrayList<>();

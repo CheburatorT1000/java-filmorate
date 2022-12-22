@@ -145,34 +145,6 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlQuery, userId);
             }
 
-    /*@Override
-    public Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId) {
-        String sql = "SELECT * FROM FILMS, MPA, GENRES " +
-                "WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ? " +
-                "AND FILM_ID NOT IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ?))";
-        try {
-             return new ArrayList<>((Collection) jdbcTemplate.query
-                     (sql, (RowMapper<Film>) (rs, rowNum)
-                             -> Film.builder()
-                             .id(rs.getInt("FILM_ID"))
-                             .name((rs.getString("FILMS.NAME")))
-                             .description(rs.getString("FILMS.DESCRIPTION"))
-                             .duration(rs.getLong("FILMS.DURATION"))
-                             .releaseDate(rs.getObject("FILMS.RELEASE_DATE", LocalDate.class))
-                             .mpa(MPA.builder()
-                                     .id(rs.getInt("MPA.MPA_ID"))
-                                     .name(rs.getString("MPA.NAME"))
-                                     .build())
-                             .genres(Genre.builder()
-                                     .id(rs.getInt("GENRES.GENRE_ID"))
-                                     .name(rs.getString("GENRES.NAME"))
-                                     .build())
-                             .build(), userWithCommonLikesId, userWantsRecomId));
-        } catch (EmptyResultDataAccessException exception) {
-            return new ArrayList<>();
-        }
-    }*/
-
     @Override
     public Integer findUserWithCommonLikes (int userWantsRecomId) {
         String sqlQuery = "SELECT fl2.user_id " +
