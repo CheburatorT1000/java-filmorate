@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.model.enums.EventType.FRIEND;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
@@ -24,7 +25,9 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 public class UserService {
 
     private final UserStorage userStorage;
+
     private final FeedService feedService;
+
 
     public Collection<User> findAll() {
         log.info("Выводим список всех пользователей");
@@ -110,7 +113,13 @@ public class UserService {
         return userStorage.getCommonFriendsFromUser(findUserById(id).getId(), findUserById(otherId).getId());
     }
 
+
     public Collection<Feed>  getFeedByUserId(Integer id) {
         return feedService.getFeedByUserId(id);
+    }
+
+    public void deleteById(int userId) {
+        userStorage.deleteById(userId);
+
     }
 }

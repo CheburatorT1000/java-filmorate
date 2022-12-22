@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
@@ -61,6 +62,7 @@ public class FilmService {
     }
 
     public Film filmCreator(Film film) {
+
         Film filmFromBuilder = Film.builder()
                 .id(film.getId())
                 .name(film.getName())
@@ -89,12 +91,12 @@ public class FilmService {
     }
 
     public Film getFilmFromStorage(int id) {
-
         return filmStorage.findFilmById(id)
                 .orElseThrow(() -> new NotFoundException("Фильм не найден!"));
     }
 
     public Film putLike(int filmId, int userId) {
+
         Film film = getFilmFromStorage(filmId);
         User user = userService.findUserById(userId);
 
@@ -115,5 +117,10 @@ public class FilmService {
 
     public Collection<Film> getPopular(int count) {
         return filmStorage.getPopular(count);
+    }
+
+    public void deleteById(int filmId) {
+        filmStorage.deleteById(filmId);
+        log.info("Фильм удален с id: '{}'", filmId);
     }
 }

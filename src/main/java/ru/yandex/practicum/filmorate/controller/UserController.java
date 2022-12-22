@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -65,5 +66,10 @@ public class UserController {
     @GetMapping("/{userId}/feed")
     public Collection<Feed> getFeed(@PathVariable Integer userId) {
         return userService.getFeedByUserId(userId);
+    }
+
+    @DeleteMapping("{userId}")
+    public void deleteById(@PathVariable int userId) {
+        userService.deleteById(userId);
     }
 }
