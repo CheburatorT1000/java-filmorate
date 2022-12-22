@@ -22,15 +22,13 @@ create table IF NOT EXISTS FRIENDS
         foreign key (FRIEND_ID) references USERS
             ON DELETE CASCADE
 );
-
 create table IF NOT EXISTS MPA
 (
     MPA_ID INTEGER auto_increment,
-    NAME   CHARACTER VARYING(50) not null,
+    NAME    CHARACTER VARYING(50) not null,
     constraint "MPA_pk"
         primary key (MPA_ID)
 );
-
 create table IF NOT EXISTS FILMS
 (
     FILM_ID      INTEGER auto_increment,
@@ -38,57 +36,35 @@ create table IF NOT EXISTS FILMS
     DESCRIPTION  CHARACTER VARYING(200) not null,
     RELEASE_DATE DATE                   not null,
     DURATION     INTEGER                not null,
-    MPA_ID       INTEGER                not null,
+    MPA_ID      INTEGER                not null,
     constraint FILMS_PK
         primary key (FILM_ID),
     constraint FILMS_MPA_MPA_ID_FK
         foreign key (MPA_ID) references MPA
             ON DELETE CASCADE
 );
-
 create table IF NOT EXISTS FILM_LIKES
 (
     FILM_ID INTEGER not null,
     USER_ID INTEGER not null,
     constraint FILMLIKES_FILMS_FILM_ID_FK
-        foreign key (FILM_ID) references FILMS
-            ON DELETE CASCADE,
+        foreign key (FILM_ID) references FILMS,
     constraint FILMLIKES_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
-            ON DELETE CASCADE
 );
-
 create table IF NOT EXISTS GENRE
 (
     GENRE_ID INTEGER auto_increment,
     NAME     CHARACTER VARYING(50) not null,
     constraint "GENRE_pk"
         primary key (GENRE_ID)
-
 );
-
 create table IF NOT EXISTS FILM_GENRE
 (
     FILM_ID  INTEGER not null,
     GENRE_ID INTEGER not null,
     constraint FILM_GENRE_FILMS_FILM_ID_FK
-        foreign key (FILM_ID) references FILMS
-            ON DELETE CASCADE,
+        foreign key (FILM_ID) references FILMS,
     constraint FILM_GENRE_GENRE_GENRE_ID_FK
         foreign key (GENRE_ID) references GENRE
-);
-
-create table IF NOT EXISTS FEED
-(
-    EVENT_ID   INTEGER auto_increment,
-    ENTITY_ID  INTEGER not null,
-    USER_ID    INTEGER not null,
-    TIME_STAMP INTEGER not null,
-    EVENT_TYPE CHARACTER VARYING(10) not null,
-    OPERATION  CHARACTER VARYING(10) not null,
-    constraint "FEED_pk"
-        primary key (EVENT_ID),
-    constraint FEED_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
-            ON DELETE CASCADE
 );
