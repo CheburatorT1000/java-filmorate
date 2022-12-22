@@ -17,7 +17,7 @@ import java.util.Collection;
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FeedService {
-   // private final UserStorage userStorage;
+   // private final UserService userService;
     private final FeedStorage feedStorage;
 
 
@@ -27,7 +27,7 @@ public class FeedService {
     }
 
     public Collection<Feed> getFeedByUserId(Integer id) {
-      //  userStorage.findUserById(id);
+      //  userService.findUserById(id);
         return feedStorage.getFeedByUserId(id);
     }
 }
