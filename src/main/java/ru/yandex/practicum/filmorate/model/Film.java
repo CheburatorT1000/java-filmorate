@@ -24,7 +24,6 @@ public class Film {
     @NotNull
     @Positive
     private Long duration;
-
     private MPA mpa;
     private LinkedHashSet<Genre> genres;
     private LinkedHashSet<Director> directors;

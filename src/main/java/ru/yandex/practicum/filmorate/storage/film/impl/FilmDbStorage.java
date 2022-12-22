@@ -35,6 +35,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film save(Film film) {
         String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) " +
                 "VALUES (?, ?, ?, ?, ?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
@@ -154,6 +155,7 @@ public class FilmDbStorage implements FilmStorage {
                 "DURATION = ?, " +
                 "MPA_ID = ?" +
                 "WHERE FILM_ID = ?";
+
         jdbcTemplate.update(sqlQuery,
                 film.getName(),
                 film.getDescription(),
@@ -179,6 +181,7 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM FILM_GENRE " +
                 "JOIN GENRE G ON G.GENRE_ID = FILM_GENRE.GENRE_ID " +
                 "WHERE FILM_ID IN (:ids)";
+
         List<Integer> ids = films.stream()
                 .map(Film::getId)
                 .collect(toList());
@@ -236,7 +239,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void putLike(int filmId, int userId) {
-
         String sqlQuery = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) " +
                 "VALUES (?, ?)";
 
@@ -254,7 +256,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopular(int count) {
-
         String sqlQuery = "SELECT FILMS.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
                 "FROM FILMS " +
                 "LEFT JOIN FILM_LIKES FL ON FILMS.FILM_ID = FL.FILM_ID " +
@@ -265,14 +266,16 @@ public class FilmDbStorage implements FilmStorage {
                 ") " +
                 "ORDER BY COUNT(FL.FILM_ID) DESC " +
                 "LIMIT ?";
+
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
         loadGenres(films);
+
         loadDirectors(films);
 
         return films;
     }
-
     @Override
+
     public List<Film> getSortedDirectorsFilms(int id, String sortBy) {
         String sqlQuery;
         log.info("Проверяем способ сортировки");
@@ -317,4 +320,10 @@ public class FilmDbStorage implements FilmStorage {
         return sqlQuery;
     }
 
+
+    public void deleteById(int filmId) {
+        String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
+
+        jdbcTemplate.update(sqlQuery, filmId);
+    }
 }

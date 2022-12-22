@@ -8,10 +8,12 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+
+import java.util.Optional;
+
 
 @Slf4j
 @Service
@@ -55,6 +57,7 @@ public class FilmService {
     }
 
     public Film filmCreator(Film film) {
+
         Film filmFromBuilder = Film.builder()
                 .id(film.getId())
                 .name(film.getName())
@@ -84,12 +87,12 @@ public class FilmService {
     }
 
     public Film getFilmFromStorage(int id) {
-
         return filmStorage.findFilmById(id)
                 .orElseThrow(() -> new NotFoundException("Фильм не найден!"));
     }
 
     public Film putLike(int filmId, int userId) {
+
         Film film = getFilmFromStorage(filmId);
         userService.findUserById(userId);
 
@@ -114,6 +117,11 @@ public class FilmService {
         List<Film> films;
         directorService.findDirectorById(id);
         films = filmStorage.getSortedDirectorsFilms(id, sortBy);
-        return films ;
+        return films;
+    }
+    public void deleteById(int filmId) {
+        filmStorage.deleteById(filmId);
+        log.info("Фильм удален с id: '{}'", filmId);
+
     }
 }

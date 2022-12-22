@@ -41,6 +41,7 @@ public class MpaDb implements MpaStorage {
     @Override
     public Collection<MPA> findAll() {
         String sqlQuery = "SELECT MPA_ID, NAME FROM MPA";
+
         return jdbcTemplate.query(sqlQuery, this::mapRowToMpa);
     }
 

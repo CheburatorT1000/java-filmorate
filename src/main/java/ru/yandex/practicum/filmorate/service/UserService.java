@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -96,5 +97,9 @@ public class UserService {
 
     public Collection<User> getCommonFriendsFromUser(int id, int otherId) {
         return userStorage.getCommonFriendsFromUser(findUserById(id).getId(), findUserById(otherId).getId());
+    }
+
+    public void deleteById(int userId) {
+        userStorage.deleteById(userId);
     }
 }

@@ -10,15 +10,19 @@ create table IF NOT EXISTS USERS
     constraint USERS_PK
         primary key (USER_ID)
 );
+
 create table IF NOT EXISTS FRIENDS
 (
     USER_ID   INTEGER not null,
     FRIEND_ID INTEGER not null,
     constraint FRIENDS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS,
+        foreign key (USER_ID) references USERS
+            ON DELETE CASCADE,
     constraint FRIENDS_USERS_USER_ID_FK_2
         foreign key (FRIEND_ID) references USERS
+            ON DELETE CASCADE
 );
+
 create table IF NOT EXISTS MPA
 (
     MPA_ID  INTEGER auto_increment,
@@ -32,6 +36,13 @@ CREATE TABLE IF NOT EXISTS DIRECTORS
     NAME          CHARACTER VARYING(50) not null,
     CONSTRAINT directors_pk PRIMARY KEY (DIRECTOR_ID)
 );
+CREATE TABLE IF NOT EXISTS MPA (
+    MPA_ID INTEGER auto_increment,
+    NAME   CHARACTER VARYING(50) not null,
+    constraint "MPA_pk"
+        primary key (MPA_ID)
+);
+
 create table IF NOT EXISTS FILMS
 (
     FILM_ID      INTEGER auto_increment,
@@ -44,16 +55,21 @@ create table IF NOT EXISTS FILMS
         primary key (FILM_ID),
     constraint FILMS_MPA_MPA_ID_FK
         foreign key (MPA_ID) references MPA
+            ON DELETE CASCADE
 );
+
 create table IF NOT EXISTS FILM_LIKES
 (
     FILM_ID INTEGER not null,
     USER_ID INTEGER not null,
     constraint FILMLIKES_FILMS_FILM_ID_FK
-        foreign key (FILM_ID) references FILMS,
+        foreign key (FILM_ID) references FILMS
+            ON DELETE CASCADE,
     constraint FILMLIKES_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
+            ON DELETE CASCADE
 );
+
 create table IF NOT EXISTS FILM_DIRECTOR
 (
     film_id     INTEGER NOT NULL,
@@ -67,19 +83,23 @@ create table IF NOT EXISTS FILM_DIRECTOR
         FOREIGN KEY (director_id) REFERENCES DIRECTORS
             ON UPDATE CASCADE ON DELETE CASCADE
 );
+
 create table IF NOT EXISTS GENRE
 (
     GENRE_ID INTEGER auto_increment,
     NAME     CHARACTER VARYING(50) not null,
     constraint "GENRE_pk"
         primary key (GENRE_ID)
+
 );
+
 create table IF NOT EXISTS FILM_GENRE
 (
     FILM_ID  INTEGER not null,
     GENRE_ID INTEGER not null,
     constraint FILM_GENRE_FILMS_FILM_ID_FK
-        foreign key (FILM_ID) references FILMS,
+        foreign key (FILM_ID) references FILMS
+            ON DELETE CASCADE,
     constraint FILM_GENRE_GENRE_GENRE_ID_FK
         foreign key (GENRE_ID) references GENRE
 );
