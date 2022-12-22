@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,8 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -141,10 +141,51 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void deleteById(int userId) {
         String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
-        
+
         jdbcTemplate.update(sqlQuery, userId);
             }
 
+    /*@Override
+    public Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId) {
+        String sql = "SELECT * FROM FILMS, MPA, GENRES " +
+                "WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ? " +
+                "AND FILM_ID NOT IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ?))";
+        try {
+             return new ArrayList<>((Collection) jdbcTemplate.query
+                     (sql, (RowMapper<Film>) (rs, rowNum)
+                             -> Film.builder()
+                             .id(rs.getInt("FILM_ID"))
+                             .name((rs.getString("FILMS.NAME")))
+                             .description(rs.getString("FILMS.DESCRIPTION"))
+                             .duration(rs.getLong("FILMS.DURATION"))
+                             .releaseDate(rs.getObject("FILMS.RELEASE_DATE", LocalDate.class))
+                             .mpa(MPA.builder()
+                                     .id(rs.getInt("MPA.MPA_ID"))
+                                     .name(rs.getString("MPA.NAME"))
+                                     .build())
+                             .genres(Genre.builder()
+                                     .id(rs.getInt("GENRES.GENRE_ID"))
+                                     .name(rs.getString("GENRES.NAME"))
+                                     .build())
+                             .build(), userWithCommonLikesId, userWantsRecomId));
+        } catch (EmptyResultDataAccessException exception) {
+            return new ArrayList<>();
+        }
+    }*/
+
+    @Override
+    public Integer findUserWithCommonLikes (int userWantsRecomId) {
+        String sqlQuery = "SELECT fl2.user_id " +
+                "FROM FILM_LIKES AS fl1, FILM_LIKES AS fl2 " +
+                "WHERE fl1.USER_ID = ? AND fl1.USER_ID != fl2.USER_ID " +
+                "GROUP BY fl1.user_id, fl2.user_id " +
+                "ORDER BY count(fl2.USER_ID) desc limit 1";
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, Integer.class, userWantsRecomId);
+        } catch (EmptyResultDataAccessException exception) {
+            return userWantsRecomId;
+        }
+    }
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
 
         return User.builder()

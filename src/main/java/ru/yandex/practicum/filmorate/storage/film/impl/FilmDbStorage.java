@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -226,10 +227,9 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM FILMS " +
                 "LEFT JOIN FILM_LIKES FL ON FILMS.FILM_ID = FL.FILM_ID " +
                 "LEFT JOIN MPA M on M.MPA_ID = FILMS.MPA_ID " +
-                "GROUP BY FILMS.FILM_ID, FL.FILM_ID IN ( " +
+                "GROUP BY FILMS.FILM_ID, FL.FILM_ID IN (" +
                 "SELECT FILM_ID " +
-                "FROM FILM_LIKES " +
-                ") " +
+                "FROM FILM_LIKES) " +
                 "ORDER BY COUNT(FL.FILM_ID) DESC " +
                 "LIMIT ?";
 
@@ -238,6 +238,19 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
+    @Override
+    public Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId) {
+        String sql = "SELECT * FROM FILMS, MPA " +
+                "WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ? " +
+                "AND FILM_ID NOT IN (SELECT FILM_ID FROM FILM_LIKES WHERE USER_ID = ?))";
+            try {
+                return jdbcTemplate.query
+                        (sql, (rs, rowNum) -> findFilmById(rs.getInt("FILM_ID")).orElseThrow(),
+                                userWithCommonLikesId, userWantsRecomId);
+            } catch (EmptyResultDataAccessException exception) {
+                return new ArrayList<>();
+            }
+    }
     @Override
     public void deleteById(int filmId) {
         String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
