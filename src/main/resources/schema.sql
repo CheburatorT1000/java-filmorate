@@ -56,8 +56,8 @@ create table IF NOT EXISTS FILM_LIKES
 );
 create table IF NOT EXISTS FILM_DIRECTOR
 (
-    film_id     bigint NOT NULL,
-    director_id bigint NOT NULL,
+    film_id     INTEGER NOT NULL,
+    director_id INTEGER NOT NULL,
     CONSTRAINT pk_film_director
         PRIMARY KEY (film_id, director_id),
     CONSTRAINT fk_film_director_film_id

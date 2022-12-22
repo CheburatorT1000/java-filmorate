@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,10 +12,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,24 +25,11 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
-    private final GenreService genreService;
-    private final UserDbStorage userDbStorage;
-
-
-    @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate,
-                         GenreService genreService, UserDbStorage userDbStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedJdbcTemplate = namedJdbcTemplate;
-        this.genreService = genreService;
-
-        this.userDbStorage = userDbStorage;
-
-    }
 
     @Override
     public Film save(Film film) {
@@ -53,13 +37,13 @@ public class FilmDbStorage implements FilmStorage {
                 "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
-            stmt.setString(1, film.getName());
-            stmt.setString(2, film.getDescription());
-            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-            stmt.setLong(4, film.getDuration());
-            stmt.setInt(5, film.getMpa().getId());
-            return stmt;
+            PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
+            statement.setString(1, film.getName());
+            statement.setString(2, film.getDescription());
+            statement.setDate(3, Date.valueOf(film.getReleaseDate()));
+            statement.setLong(4, film.getDuration());
+            statement.setInt(5, film.getMpa().getId());
+            return statement;
         }, keyHolder);
         film.setId(keyHolder.getKey().intValue());
 
@@ -307,7 +291,6 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
         loadGenres(films);
         loadDirectors(films);
-        //TODO
 
         return films;
     }
@@ -330,7 +313,7 @@ public class FilmDbStorage implements FilmStorage {
                 + "WHERE fi.film_id IN (SELECT film_id FROM film_director WHERE director_id = ?) "
                 + "group by fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
                 + "fi.duration, m.name , m.mpa_id "
-                + "ORDER BY count(*) desc" ;
+                + "ORDER BY count(*) desc";
         return sqlQuery;
     }
 
