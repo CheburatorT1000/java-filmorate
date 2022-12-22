@@ -21,7 +21,7 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FilmService {
 
     private final FilmStorage filmStorage;

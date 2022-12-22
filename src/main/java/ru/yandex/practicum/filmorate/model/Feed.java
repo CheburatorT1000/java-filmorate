@@ -4,8 +4,6 @@ import lombok.*;
 import ru.yandex.practicum.filmorate.model.enums.EventType;
 import ru.yandex.practicum.filmorate.model.enums.Operation;
 
-import java.math.BigInteger;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,10 +11,10 @@ import java.math.BigInteger;
 @Builder
 public class Feed {
 
-   private Integer id;
+   private Integer eventId;
     private Integer entityId;
     private Integer userId;
-    private Integer timeStamp;
+    private long timestamp;
     private EventType eventType;
     private Operation operation;
   }

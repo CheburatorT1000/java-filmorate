@@ -21,7 +21,7 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_=@Autowired)
 public class UserService {
 
     private final UserStorage userStorage;
@@ -122,4 +122,5 @@ public class UserService {
         userStorage.deleteById(userId);
 
     }
+
 }

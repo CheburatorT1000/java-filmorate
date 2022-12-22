@@ -82,7 +82,7 @@ create table IF NOT EXISTS FEED
     EVENT_ID   INTEGER auto_increment,
     ENTITY_ID  INTEGER               not null,
     USER_ID    INTEGER               not null,
-    TIME_STAMP INTEGER               not null,
+    TIME_STAMP LONG                  not null,
     EVENT_TYPE CHARACTER VARYING(10) not null,
     OPERATION  CHARACTER VARYING(10) not null,
     constraint "FEED_pk"
