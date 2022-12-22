@@ -65,3 +65,28 @@ create table IF NOT EXISTS FILM_GENRE
     constraint FILM_GENRE_GENRE_GENRE_ID_FK
         foreign key (GENRE_ID) references GENRE
 );
+create table IF NOT EXISTS REVIEWS
+  (
+      REVIEW_ID   INTEGER auto_increment,
+      CONTENT     CHARACTER VARYING not null,
+      IS_POSITIVE BOOLEAN not null,
+      USER_ID     INTEGER not null,
+      FILM_ID     INTEGER not null,
+      constraint "REVIEWS_pk"
+          primary key (REVIEW_ID),
+      constraint "REVIEWS_FILMS_null_fk"
+          foreign key (FILM_ID) references FILMS,
+      constraint REVIEWS_USERS_USER_ID_FK
+          foreign key (USER_ID) references USERS
+  );
+create table IF NOT EXISTS REVIEW_USER
+(
+    REVIEW_ID INTEGER not null,
+    USER_ID   INTEGER not null,
+    IS_USEFUL INTEGER not null,
+    constraint REVIEW_USER_REVIEWS_REVIEW_ID_FK
+        foreign key (REVIEW_ID) references REVIEWS
+        on delete cascade,
+    constraint REVIEW_USER_USERS_USER_ID_FK
+        foreign key (USER_ID) references USERS
+);
