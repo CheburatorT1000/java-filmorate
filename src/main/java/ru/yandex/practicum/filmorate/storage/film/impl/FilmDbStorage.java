@@ -269,9 +269,29 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
         loadGenres(films);
-
         loadDirectors(films);
+        return films;
+    }
 
+    @Override
+    public List<Film> getCommonFilmsByRating(long userId, long friendId) {
+
+        String sqlQuery =
+                "SELECT fi.*, " +
+                "mpa.name, " +
+                "mpa.mpa_id, " +
+                "COUNT(flmlk.film_id) rate " +
+                "FROM films fi " +
+                "JOIN mpa ON fi.mpa_id = mpa.mpa_id " +
+                "JOIN film_likes flmlk ON fi.film_id = flmlk.film_id " +
+                "JOIN film_likes flmlk2 ON fi.film_id = flmlk2.film_id " +
+                "WHERE flmlk.user_id = ? " +
+                "AND flmlk2.user_id = ? " +
+                "GROUP BY fi.film_id " +
+                "ORDER BY rate;";
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+        loadGenres(films);
+        loadDirectors(films);
         return films;
     }
     @Override

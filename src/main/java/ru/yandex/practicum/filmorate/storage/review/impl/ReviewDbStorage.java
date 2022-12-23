@@ -95,7 +95,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public List<Review> getAllReviewsByFilmId(int filmId, int count) {
+    public List<Review> getReviewsByFilmId(int filmId, int count) {
         String sqlQuery = "SELECT R.REVIEW_ID, R.CONTENT, R.IS_POSITIVE, R.USER_ID, R.FILM_ID, " +
                 "ifnull(SUM(RU.IS_USEFUL), 0) AS USEFUL " +
                 "FROM REVIEWS AS R " +

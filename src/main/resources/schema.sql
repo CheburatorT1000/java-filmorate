@@ -23,19 +23,18 @@ create table IF NOT EXISTS FRIENDS
             ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS MPA
-(
-    MPA_ID  INTEGER auto_increment,
-    NAME    CHARACTER VARYING(50) not null,
-    constraint "MPA_pk"
-        primary key (MPA_ID)
-);
-
 CREATE TABLE IF NOT EXISTS DIRECTORS
 (
     DIRECTOR_ID   INTEGER auto_increment,
     NAME          CHARACTER VARYING(50) not null,
     CONSTRAINT directors_pk PRIMARY KEY (DIRECTOR_ID)
+);
+
+CREATE TABLE IF NOT EXISTS MPA (
+    MPA_ID INTEGER auto_increment,
+    NAME   CHARACTER VARYING(50) not null,
+    constraint "MPA_pk"
+        primary key (MPA_ID)
 );
 
 create table IF NOT EXISTS FILMS
@@ -98,20 +97,36 @@ create table IF NOT EXISTS FILM_GENRE
     constraint FILM_GENRE_GENRE_GENRE_ID_FK
         foreign key (GENRE_ID) references GENRE
 );
+
+create table IF NOT EXISTS FEED
+(
+    EVENT_ID   INTEGER auto_increment,
+    ENTITY_ID  INTEGER               not null,
+    USER_ID    INTEGER               not null,
+    TIME_STAMP LONG                  not null,
+    EVENT_TYPE CHARACTER VARYING(10) not null,
+    OPERATION  CHARACTER VARYING(10) not null,
+    constraint "FEED_pk"
+        primary key (EVENT_ID),
+    constraint FEED_USERS_USER_ID_FK
+        foreign key (USER_ID) references USERS
+);
+
 create table IF NOT EXISTS REVIEWS
-  (
-      REVIEW_ID   INTEGER auto_increment,
-      CONTENT     CHARACTER VARYING not null,
-      IS_POSITIVE BOOLEAN not null,
-      USER_ID     INTEGER not null,
-      FILM_ID     INTEGER not null,
-      constraint "REVIEWS_pk"
-          primary key (REVIEW_ID),
-      constraint "REVIEWS_FILMS_null_fk"
-          foreign key (FILM_ID) references FILMS,
-      constraint REVIEWS_USERS_USER_ID_FK
-          foreign key (USER_ID) references USERS
-  );
+(
+    REVIEW_ID   INTEGER auto_increment,
+    CONTENT     CHARACTER VARYING not null,
+    IS_POSITIVE BOOLEAN           not null,
+    USER_ID     INTEGER           not null,
+    FILM_ID     INTEGER           not null,
+    constraint "REVIEWS_pk"
+        primary key (REVIEW_ID),
+    constraint "REVIEWS_FILMS_null_fk"
+        foreign key (FILM_ID) references FILMS,
+    constraint REVIEWS_USERS_USER_ID_FK
+        foreign key (USER_ID) references USERS
+);
+
 create table IF NOT EXISTS REVIEW_USER
 (
     REVIEW_ID INTEGER not null,
@@ -119,7 +134,7 @@ create table IF NOT EXISTS REVIEW_USER
     IS_USEFUL INTEGER not null,
     constraint REVIEW_USER_REVIEWS_REVIEW_ID_FK
         foreign key (REVIEW_ID) references REVIEWS
-        on delete cascade,
+            on delete cascade,
     constraint REVIEW_USER_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
 );
