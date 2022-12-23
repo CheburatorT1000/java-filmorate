@@ -20,7 +20,7 @@ public interface FilmStorage {
 
     boolean deleteUsersLike(Film film, User user);
 
-    Collection<Film> getPopular(int count);
+    Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year);
 
     List<Film> getSortedDirectorsFilms(int id, String sortBy);
 

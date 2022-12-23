@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmController {
 
     private final FilmService filmService;
@@ -42,6 +44,7 @@ public class FilmController {
                         @PathVariable int userId) {
         return filmService.putLike(filmId, userId);
     }
+
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable("id") int filmId,
                            @PathVariable int userId) {
@@ -49,8 +52,10 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopular(count);
+    public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count,
+                                              @RequestParam Optional<Integer> genreId,
+                                              @RequestParam Optional<Integer> year) {
+        return filmService.getPopular(count, genreId, year);
     }
 
     @GetMapping("/director/{directorId}")

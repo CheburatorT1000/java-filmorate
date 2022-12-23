@@ -16,6 +16,7 @@ import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -120,8 +121,8 @@ public class FilmService {
         return filmStorage.getCommonFilmsByRating(userId, friendId);
     }
 
-    public Collection<Film> getPopular(int count) {
-        return filmStorage.getPopular(count);
+    public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        return filmStorage.getPopular(count, genreId, year);
     }
 
     public List<Film> getSortedDirectorsFilms(int id, String sortBy) {
