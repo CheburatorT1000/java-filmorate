@@ -11,10 +11,22 @@ import ru.yandex.practicum.filmorate.model.enums.Operation;
 @Builder
 public class Feed {
 
-   private Integer eventId;
+    private Integer eventId;
     private Integer entityId;
     private Integer userId;
     private long timestamp;
     private EventType eventType;
     private Operation operation;
-  }
+
+    @Override
+    public String toString() {
+        return "Feed{" +
+                "eventId=" + eventId +
+                ", entityId=" + entityId +
+                ", userId=" + userId +
+                ", timestamp=" + timestamp +
+                ", eventType=" + eventType +
+                ", operation=" + operation +
+                '}';
+    }
+}

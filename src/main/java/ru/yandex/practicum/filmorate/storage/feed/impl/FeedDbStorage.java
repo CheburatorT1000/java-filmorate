@@ -20,10 +20,10 @@ public class FeedDbStorage implements FeedStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<Feed> getFeedByUserId(Integer id) {
+    public Collection<Feed> getFeedByUserId(Integer userId) {
         String sqlQuery = "SELECT * FROM FEED WHERE USER_ID = ? ORDER BY TIME_STAMP ASC";
 
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFeed, id);
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFeed, userId);
     }
 
     @Override

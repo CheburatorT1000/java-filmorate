@@ -8,7 +8,7 @@ import java.util.Collection;
 
 public interface FeedStorage {
 
-    Collection<Feed> getFeedByUserId(Integer id);
+    Collection<Feed> getFeedByUserId(Integer userId);
 
     void addFeed(Integer entityId, Integer userId, long timeStamp, EventType eventType, Operation operation);
 }
