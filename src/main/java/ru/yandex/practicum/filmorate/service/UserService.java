@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -11,9 +10,7 @@ import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.model.enums.EventType.FRIEND;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
@@ -28,7 +25,6 @@ public class UserService {
 
     private final FeedService feedService;
 
-
     public Collection<User> findAll() {
         log.info("Выводим список всех пользователей");
         return userStorage.findAll();
@@ -39,11 +35,8 @@ public class UserService {
         log.info("Проверяем user в валидаторах");
         validateLogin(user);
         user = validateName(user);
-
         User userFromCreator = userCreator(user);
-
         log.info("Добавляем объект в коллекцию");
-
         return userStorage.save(userFromCreator);
     }
 
@@ -103,6 +96,8 @@ public class UserService {
     }
 
     public void deleteFriend(int id, int friendId) {
+        checkUserExist(id);
+        checkUserExist(friendId);
         userStorage.deleteFriend(findUserById(id), findUserById(friendId));
         feedService.addFeed(friendId, id, FRIEND, REMOVE);
     }
@@ -115,7 +110,6 @@ public class UserService {
         checkUserExist(id);
         return userStorage.getCommonFriendsFromUser(findUserById(id).getId(), findUserById(otherId).getId());
     }
-
 
     public Collection<Feed> getFeedByUserId(Integer id) {
         checkUserExist(id);
@@ -131,5 +125,4 @@ public class UserService {
             throw new NotFoundException(String.format("User with id: %d not found", id));
         }
     }
-
 }
