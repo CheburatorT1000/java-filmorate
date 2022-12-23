@@ -23,19 +23,13 @@ create table IF NOT EXISTS FRIENDS
             ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS MPA
-(
-    MPA_ID  INTEGER auto_increment,
-    NAME    CHARACTER VARYING(50) not null,
-    constraint "MPA_pk"
-        primary key (MPA_ID)
-);
 CREATE TABLE IF NOT EXISTS DIRECTORS
 (
     DIRECTOR_ID   INTEGER auto_increment,
     NAME          CHARACTER VARYING(50) not null,
     CONSTRAINT directors_pk PRIMARY KEY (DIRECTOR_ID)
 );
+
 CREATE TABLE IF NOT EXISTS MPA (
     MPA_ID INTEGER auto_increment,
     NAME   CHARACTER VARYING(50) not null,

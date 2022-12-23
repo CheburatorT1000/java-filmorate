@@ -115,6 +115,11 @@ public class FilmService {
         return film;
     }
 
+    public List<Film> getCommonFilmsByRating(Long userId, Long friendId) {
+
+        return filmStorage.getCommonFilmsByRating(userId, friendId);
+    }
+
     public Collection<Film> getPopular(int count) {
         return filmStorage.getPopular(count);
     }
