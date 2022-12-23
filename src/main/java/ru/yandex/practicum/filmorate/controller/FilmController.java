@@ -10,12 +10,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor(onConstructor_=@Autowired)
 public class FilmController {
 
-    @Autowired
     private final FilmService filmService;
 
     @GetMapping

@@ -186,7 +186,7 @@ public class FilmDbStorage implements FilmStorage {
                 .map(Film::getId)
                 .collect(toList());
         Map<Integer, Film> filmMap = films.stream()
-                .collect(Collectors.toMap(Film::getId, film -> film, (a, b) -> b));
+                .collect(Collectors.toMap(film1 -> film1.getId(), film -> film, (a, b) -> b));
         SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
         SqlRowSet sqlRowSet = namedJdbcTemplate.queryForRowSet(sqlGenres, parameters);
         while (sqlRowSet.next()) {
