@@ -351,25 +351,32 @@ public class FilmDbStorage implements FilmStorage {
         String querySyntax = "%" + query + "%";
         List<Film> films;
         if (by.contains("title") && by.contains("director")) {
-            String sqlQuery = "* , " +
+            String sqlQuery = "SELECT *, " +
                     "CAST(FILMS.NAME AS VARCHAR_IGNORECASE), " +
-                    "CAST(FILMS.DIRECTOR AS VARCHAR_IGNORECASE) " +
+                    "CAST(D.NAME AS VARCHAR_IGNORECASE) " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
+                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
+                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
                     "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
-                    "OR CAST(FILMS.DIRECTOR AS VARCHAR_IGNORECASE) LIKE ?;";
+                    "OR CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax, querySyntax);
         } else if (by.contains("director") && !by.contains("title")) {
-            String sqlQuery = "SELECT *, CAST(FILMS.DIRECTOR AS VARCHAR_IGNORECASE) " +
+            String sqlQuery = "SELECT *, " +
+                    "CAST(D.NAME AS VARCHAR_IGNORECASE) " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
-                    "WHERE CAST(FILMS.DIRECTOR AS VARCHAR_IGNORECASE) LIKE ?;";
+                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
+                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
+                    "WHERE CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
         } else if (by.contains("title") && !by.contains("director")) {
             String sqlQuery = "SELECT *," +
                     "CAST(FILMS.NAME AS VARCHAR_IGNORECASE) " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
+                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
+                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
                     "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ?;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
         } else {
