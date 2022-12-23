@@ -67,6 +67,15 @@ public class FilmController {
     public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
         return filmService.getCommonFilmsByRating(userId, friendId);
     }
+    
+    @GetMapping("/search")
+    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam Optional<List<String>> by) {
+        if (by.isPresent()) {
+            return filmService.getSearchResults(query, by.get());
+        } else {
+            return filmService.getPopular(10);
+        }
+    }
 }
 
 
