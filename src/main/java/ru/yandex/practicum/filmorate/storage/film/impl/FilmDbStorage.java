@@ -361,4 +361,58 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbcTemplate.update(sqlQuery, filmId);
     }
+    
+    public List<Film> getSearchResults(String query, List<String> by) {
+        String querySyntax = "%" + query + "%";
+        List<Film> films;
+        if (by.contains("title") && by.contains("director")) {
+            String sqlQuery = "SELECT *, " +
+                    "CAST(FILMS.NAME AS VARCHAR_IGNORECASE), " +
+                    "CAST(D.NAME AS VARCHAR_IGNORECASE), " +
+                    "COUNT(FLMLK.FILM_ID) RATE " +
+                    "FROM FILMS " +
+                    "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
+                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
+                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
+                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
+                    "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
+                    "OR CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?" +
+                    "GROUP BY FILMS.FILM_ID " +
+                    "ORDER BY RATE DESC;";
+            films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax, querySyntax);
+        } else if (by.contains("director") && !by.contains("title")) {
+            String sqlQuery = "SELECT *, " +
+                    "CAST(D.NAME AS VARCHAR_IGNORECASE), " +
+                    "COUNT(FLMLK.FILM_ID) RATE " +
+                    "FROM FILMS " +
+                    "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
+                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
+                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
+                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
+                    "WHERE CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?" +
+                    "GROUP BY FILMS.FILM_ID " +
+                    "ORDER BY RATE DESC;";
+            films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
+        } else if (by.contains("title") && !by.contains("director")) {
+            String sqlQuery = "SELECT *," +
+                    "CAST(FILMS.NAME AS VARCHAR_IGNORECASE), " +
+                    "COUNT(FLMLK.FILM_ID) RATE " +
+                    "FROM FILMS " +
+                    "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
+                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
+                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
+                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
+                    "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
+                    "GROUP BY FILMS.FILM_ID " +
+                    "ORDER BY RATE DESC;";
+            films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
+        } else {
+            log.error("Передан неверный запрос в на поиск by");
+            throw new ValidationException("Неверный запрос by");
+        }
+        log.info("Собрали список через поиск размером в {} элементов", films.size());
+        loadGenres(films);
+        loadDirectors(films);
+        return films;
+    }
 }

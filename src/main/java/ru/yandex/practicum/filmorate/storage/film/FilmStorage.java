@@ -30,4 +30,6 @@ public interface FilmStorage {
 
     Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId);
 
+    List<Film> getSearchResults(String query, List<String> by);
+
 }

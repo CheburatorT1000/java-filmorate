@@ -130,9 +130,14 @@ public class FilmService {
         films = filmStorage.getSortedDirectorsFilms(id, sortBy);
         return films;
     }
+    
     public void deleteById(int filmId) {
         filmStorage.deleteById(filmId);
         log.info("Фильм удален с id: '{}'", filmId);
-
     }
+    
+    public List<Film> getSearchResults(String query, List<String> by) {
+        return filmStorage.getSearchResults(query, by);
+    }
+    
 }
