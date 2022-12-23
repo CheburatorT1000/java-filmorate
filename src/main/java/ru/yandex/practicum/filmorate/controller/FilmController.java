@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -53,9 +53,16 @@ public class FilmController {
         return filmService.getPopular(count);
     }
 
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getByDirectorId(@PathVariable Integer directorId,
+                                      @RequestParam String sortBy) {
+        return filmService.getSortedDirectorsFilms(directorId, sortBy);
+    }
     @DeleteMapping("/{filmId}")
     public void deleteById(@PathVariable int filmId) {
         filmService.deleteById(filmId);
+
     }
 }
 

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,7 +10,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,14 +20,11 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor(onConstructor_=@Autowired)
+
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Optional<User> findUserById(int id) {
@@ -67,12 +64,12 @@ public class UserDbStorage implements UserStorage {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
-            stmt.setString(1, user.getEmail());
-            stmt.setString(2, user.getLogin());
-            stmt.setString(3, user.getName());
-            stmt.setDate(4, Date.valueOf(user.getBirthday()));
-            return stmt;
+            PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
+            statement.setString(1, user.getEmail());
+            statement.setString(2, user.getLogin());
+            statement.setString(3, user.getName());
+            statement.setDate(4, Date.valueOf(user.getBirthday()));
+            return statement;
         }, keyHolder);
         user.setId(keyHolder.getKey().intValue());
         return user;

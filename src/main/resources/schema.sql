@@ -1,4 +1,5 @@
 DROP ALL OBJECTS;
+
 create table IF NOT EXISTS USERS
 (
     USER_ID  INTEGER auto_increment,
@@ -24,6 +25,18 @@ create table IF NOT EXISTS FRIENDS
 
 create table IF NOT EXISTS MPA
 (
+    MPA_ID  INTEGER auto_increment,
+    NAME    CHARACTER VARYING(50) not null,
+    constraint "MPA_pk"
+        primary key (MPA_ID)
+);
+CREATE TABLE IF NOT EXISTS DIRECTORS
+(
+    DIRECTOR_ID   INTEGER auto_increment,
+    NAME          CHARACTER VARYING(50) not null,
+    CONSTRAINT directors_pk PRIMARY KEY (DIRECTOR_ID)
+);
+CREATE TABLE IF NOT EXISTS MPA (
     MPA_ID INTEGER auto_increment,
     NAME   CHARACTER VARYING(50) not null,
     constraint "MPA_pk"
@@ -55,6 +68,20 @@ create table IF NOT EXISTS FILM_LIKES
     constraint FILMLIKES_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
             ON DELETE CASCADE
+);
+
+create table IF NOT EXISTS FILM_DIRECTOR
+(
+    film_id     INTEGER NOT NULL,
+    director_id INTEGER NOT NULL,
+    CONSTRAINT pk_film_director
+        PRIMARY KEY (film_id, director_id),
+    CONSTRAINT fk_film_director_film_id
+        FOREIGN KEY (film_id) REFERENCES films
+            ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_film_director_director_id
+        FOREIGN KEY (director_id) REFERENCES DIRECTORS
+            ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 create table IF NOT EXISTS GENRE

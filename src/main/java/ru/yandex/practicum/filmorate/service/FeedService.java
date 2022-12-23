@@ -14,7 +14,7 @@ import java.util.Collection;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor(onConstructor_=@Autowired)
 public class FeedService {
     private final FeedStorage feedStorage;
 
