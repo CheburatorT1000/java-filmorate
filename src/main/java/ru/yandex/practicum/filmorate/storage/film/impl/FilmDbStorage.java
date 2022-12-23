@@ -269,9 +269,29 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
         loadGenres(films);
-
         loadDirectors(films);
+        return films;
+    }
 
+    @Override
+    public List<Film> getCommonFilmsByRating(long userId, long friendId) {
+
+        String sqlQuery =
+                "SELECT fi.*, " +
+                "mpa.name, " +
+                "mpa.mpa_id, " +
+                "COUNT(flmlk.film_id) rate " +
+                "FROM films fi " +
+                "JOIN mpa ON fi.mpa_id = mpa.mpa_id " +
+                "JOIN film_likes flmlk ON fi.film_id = flmlk.film_id " +
+                "JOIN film_likes flmlk2 ON fi.film_id = flmlk2.film_id " +
+                "WHERE flmlk.user_id = ? " +
+                "AND flmlk2.user_id = ? " +
+                "GROUP BY fi.film_id " +
+                "ORDER BY rate;";
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+        loadGenres(films);
+        loadDirectors(films);
         return films;
     }
     @Override
@@ -309,14 +329,14 @@ public class FilmDbStorage implements FilmStorage {
 
     public String queryByLikes() {
         String sqlQuery =
-                "SELECT count(*) , fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
+                "SELECT COUNT(*) , fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
                 + "fi.duration, m.name , m.mpa_id  FROM films fi "
                 + "JOIN mpa m ON fi.mpa_id = m.mpa_id "
                 + "LEFT JOIN film_likes fl on fl.film_id = fi.film_id "
                 + "WHERE fi.film_id IN (SELECT film_id FROM film_director WHERE director_id = ?) "
                 + "group by fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
                 + "fi.duration, m.name , m.mpa_id "
-                + "ORDER BY count(*) desc";
+                + "ORDER BY COUNT(*) DESC";
         return sqlQuery;
     }
 

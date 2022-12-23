@@ -8,11 +8,10 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-
-import java.util.Optional;
 
 
 @Slf4j
@@ -107,6 +106,11 @@ public class FilmService {
 
         filmStorage.deleteUsersLike(film, user);
         return film;
+    }
+
+    public List<Film> getCommonFilmsByRating(Long userId, Long friendId) {
+
+        return filmStorage.getCommonFilmsByRating(userId, friendId);
     }
 
     public Collection<Film> getPopular(int count) {
