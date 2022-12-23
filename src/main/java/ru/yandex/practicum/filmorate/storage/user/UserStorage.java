@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.data.relational.core.sql.In;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -25,6 +24,8 @@ public interface UserStorage {
     Collection<User> getCommonFriendsFromUser(int id, int otherId);
 
     void deleteById(int userId);
+
+    Boolean checkUserExist(Integer id);
 
     Integer findUserWithCommonLikes(int userId);
 

@@ -1,24 +1,21 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor(onConstructor_=@Autowired)
 public class FilmController {
 
-    @Autowired
     private final FilmService filmService;
-
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -56,9 +53,19 @@ public class FilmController {
         return filmService.getPopular(count);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> getByDirectorId(@PathVariable Integer directorId, @RequestParam String sortBy) {
+        return filmService.getSortedDirectorsFilms(directorId, sortBy);
+    }
+
     @DeleteMapping("/{filmId}")
     public void deleteById(@PathVariable int filmId) {
         filmService.deleteById(filmId);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        return filmService.getCommonFilmsByRating(userId, friendId);
     }
 }
 
