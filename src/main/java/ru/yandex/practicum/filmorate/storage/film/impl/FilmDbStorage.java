@@ -359,19 +359,21 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
                     "OR CAST(FILMS.DIRECTOR AS VARCHAR_IGNORECASE) LIKE ?;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax, querySyntax);
-        } else if (by.contains("director")) {
+        } else if (by.contains("director") && !by.contains("title")) {
             String sqlQuery = "SELECT *, CAST(FILMS.DIRECTOR AS VARCHAR_IGNORECASE) " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
                     "WHERE CAST(FILMS.DIRECTOR AS VARCHAR_IGNORECASE) LIKE ?;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
-        } else {
+        } else if (by.contains("title") && !by.contains("director")) {
             String sqlQuery = "SELECT *," +
                     "CAST(FILMS.NAME AS VARCHAR_IGNORECASE) " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
                     "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ?;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
+        } else {
+            throw new ValidationException("Неверный запрос by");
         }
         loadGenres(films);
         return films;
