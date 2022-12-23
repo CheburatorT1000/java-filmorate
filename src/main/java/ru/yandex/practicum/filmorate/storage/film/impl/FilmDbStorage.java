@@ -329,14 +329,14 @@ public class FilmDbStorage implements FilmStorage {
 
     public String queryByLikes() {
         String sqlQuery =
-                "SELECT COUNT(*) , fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
+                "SELECT count(*) , fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
                 + "fi.duration, m.name , m.mpa_id  FROM films fi "
                 + "JOIN mpa m ON fi.mpa_id = m.mpa_id "
                 + "LEFT JOIN film_likes fl on fl.film_id = fi.film_id "
                 + "WHERE fi.film_id IN (SELECT film_id FROM film_director WHERE director_id = ?) "
                 + "group by fi.name , fi.film_id , fi.mpa_id , fi.description, fi.release_date, "
                 + "fi.duration, m.name , m.mpa_id "
-                + "ORDER BY COUNT(*) DESC";
+                + "ORDER BY count(*) desc";
         return sqlQuery;
     }
 
