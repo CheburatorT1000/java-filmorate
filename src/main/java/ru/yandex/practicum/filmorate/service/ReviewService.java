@@ -18,13 +18,11 @@ public class ReviewService {
 
     private final ReviewStorage reviewStorage;
 
-
-
     public Review save(Review review) {
-        if (review != null && review.getUserId() <= 0)
+        if (review.getUserId() < 1)
             throw new NotFoundException("Пользователь с таким id не может существовать");
 
-        if (review != null && review.getFilmId() <= 0)
+        if (review.getFilmId() < 1)
             throw new NotFoundException("Фильм с таким id не может существовать");
 
         return reviewStorage.save(review);
@@ -46,7 +44,7 @@ public class ReviewService {
 
     public List<Review> getAllReviewsByParam(Optional<Integer> filmId, int count) {
         if (filmId.isPresent()) {
-            return reviewStorage.getReviewsByFilmId(filmId.get(), count);
+            return reviewStorage.getAllReviewsByFilmId(filmId.get(), count);
         } else
             return reviewStorage.getAllReviewsByParam(count);
     }

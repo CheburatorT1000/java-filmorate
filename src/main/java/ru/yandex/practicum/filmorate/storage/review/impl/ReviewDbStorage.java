@@ -27,6 +27,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review save(Review review) {
+        log.info("Сохраняем в базе отзыв");
         String sqlQuery = "INSERT INTO REVIEWS (CONTENT, IS_POSITIVE, USER_ID, FILM_ID) " +
                 "VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -39,6 +40,7 @@ public class ReviewDbStorage implements ReviewStorage {
             return stmt;
         }, keyHolder);
         review.setReviewId(keyHolder.getKey().intValue());
+        log.info(" с id '{}'", review.getReviewId());
         return review;
     }
 
@@ -53,13 +55,15 @@ public class ReviewDbStorage implements ReviewStorage {
                 review.getContent(),
                 review.getIsPositive(),
                 review.getReviewId());
+
+        log.info("Обновляем отзыв с id '{}'", review.getReviewId());
         return review;
     }
 
     @Override
     public boolean delete(int id) {
         String sqlQuery = "DELETE FROM REVIEWS WHERE REVIEW_ID = ?";
-
+        log.info("Удаляем отзыв с id '{}'", id);
         return jdbcTemplate.update(sqlQuery, id) > 0;
     }
 
@@ -91,7 +95,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public List<Review> getReviewsByFilmId(int filmId, int count) {
+    public List<Review> getAllReviewsByFilmId(int filmId, int count) {
         String sqlQuery = "SELECT R.REVIEW_ID, R.CONTENT, R.IS_POSITIVE, R.USER_ID, R.FILM_ID, " +
                 "ifnull(SUM(RU.IS_USEFUL), 0) AS USEFUL " +
                 "FROM REVIEWS AS R " +
@@ -100,7 +104,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "GROUP BY R.REVIEW_ID " +
                 "ORDER BY USEFUL DESC " +
                 "LIMIT ?";
-
+        log.info("Получаем список всех отзывов по фильму с id '{}'", filmId);
         return jdbcTemplate.query(sqlQuery, this::mapRowToReview, filmId, count);
     }
 
@@ -113,10 +117,13 @@ public class ReviewDbStorage implements ReviewStorage {
                 "GROUP BY R.REVIEW_ID " +
                 "ORDER BY USEFUL DESC " +
                 "LIMIT ?";
+
+        log.info("Получаем список всех отзывов");
         return jdbcTemplate.query(sqlQuery, this::mapRowToReview, count);
     }
 
     private Review mapRowToReview(ResultSet resultSet, int i) throws SQLException {
+        log.info("Создаем объект Отзыв");
         return Review.builder()
                 .reviewId(resultSet.getInt("REVIEW_ID"))
                 .content(resultSet.getString("CONTENT"))
@@ -132,6 +139,7 @@ public class ReviewDbStorage implements ReviewStorage {
         String sqlQuery = "INSERT INTO REVIEW_USER(REVIEW_ID, USER_ID, IS_USEFUL) " +
                 "VALUES (?, ?, 1)";
         jdbcTemplate.update(sqlQuery, id, userId);
+        log.info("Добавляем лайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
     }
 
     @Override
@@ -139,6 +147,7 @@ public class ReviewDbStorage implements ReviewStorage {
         String sqlQuery = "INSERT INTO REVIEW_USER(REVIEW_ID, USER_ID, IS_USEFUL) " +
                 "VALUES (?, ?, -1)";
         jdbcTemplate.update(sqlQuery, id, userId);
+        log.info("Добавляем дизлайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
     }
 
     @Override
@@ -148,6 +157,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "AND USER_ID = ? " +
                 "AND IS_USEFUL = 1";
         jdbcTemplate.update(sqlQuery, id, userId);
+        log.info("Удаляем лайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
     }
 
     @Override
@@ -157,5 +167,6 @@ public class ReviewDbStorage implements ReviewStorage {
                 "AND USER_ID = ? " +
                 "AND IS_USEFUL = -1";
         jdbcTemplate.update(sqlQuery, id, userId);
+        log.info("Удаляем дизлайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
     }
 }
