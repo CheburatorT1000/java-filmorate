@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -141,6 +142,19 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlQuery, userId);
     }
 
+    @Override
+    public Integer findUserWithCommonLikes (int userWantsRecomId) {
+        String sqlQuery = "SELECT fl2.user_id " +
+                "FROM FILM_LIKES AS fl1, FILM_LIKES AS fl2 " +
+                "WHERE fl1.USER_ID = ? AND fl1.USER_ID != fl2.USER_ID " +
+                "GROUP BY fl1.user_id, fl2.user_id " +
+                "ORDER BY count(fl2.USER_ID) desc limit 1";
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, Integer.class, userWantsRecomId);
+        } catch (EmptyResultDataAccessException exception) {
+            return userWantsRecomId;
+        }
+    }
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
 
         return User.builder()
