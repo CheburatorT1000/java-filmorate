@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -78,7 +77,7 @@ public class FilmController {
         if (by.isPresent()) {
             return filmService.getSearchResults(query, by.get());
         } else {
-            return filmService.getPopular(10);
+            return filmService.getPopular(10, Optional.empty(), Optional.empty());
         }
     }
 

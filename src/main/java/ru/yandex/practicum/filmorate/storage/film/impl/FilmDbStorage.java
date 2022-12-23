@@ -271,6 +271,19 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
         loadGenres(films);
         loadDirectors(films);
+
+        if (year.isPresent()) {
+            films = films.stream()
+                    .filter(film -> film.getReleaseDate().getYear() == year.get())
+                    .collect(toList());
+        }
+
+        if (genreId.isPresent()) {
+            films = films.stream().
+                    filter(film -> film.getGenres().stream()
+                            .anyMatch(genre -> genre.getId() == genreId.get()))
+                    .collect(toList());
+        }
         return films;
     }
 
