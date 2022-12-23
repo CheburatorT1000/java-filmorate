@@ -27,4 +27,6 @@ public interface UserStorage {
 
     Boolean checkUserExist(Integer id);
 
+    Integer findUserWithCommonLikes(int userId);
+
 }
