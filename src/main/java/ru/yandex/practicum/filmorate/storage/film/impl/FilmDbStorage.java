@@ -407,8 +407,10 @@ public class FilmDbStorage implements FilmStorage {
                     "ORDER BY RATE DESC;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
         } else {
+            log.error("Передан неверный запрос в на поиск by");
             throw new ValidationException("Неверный запрос by");
         }
+        log.info("Собрали список через поиск размером в {} элементов", films.size());
         loadGenres(films);
         loadDirectors(films);
         return films;
