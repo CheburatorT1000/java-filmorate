@@ -136,4 +136,8 @@ public class FilmService {
         log.info("Фильм удален с id: '{}'", filmId);
     }
     
+    public List<Film> getSearchResults(String query, List<String> by) {
+        return filmStorage.getSearchResults(query, by);
+    }
+    
 }
