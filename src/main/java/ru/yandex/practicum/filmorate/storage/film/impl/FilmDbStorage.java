@@ -368,36 +368,49 @@ public class FilmDbStorage implements FilmStorage {
         if (by.contains("title") && by.contains("director")) {
             String sqlQuery = "SELECT *, " +
                     "CAST(FILMS.NAME AS VARCHAR_IGNORECASE), " +
-                    "CAST(D.NAME AS VARCHAR_IGNORECASE) " +
+                    "CAST(D.NAME AS VARCHAR_IGNORECASE), " +
+                    "COUNT(FLMLK.FILM_ID) RATE " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
                     "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
                     "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
+                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
                     "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
-                    "OR CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?;";
+                    "OR CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?" +
+                    "GROUP BY FILMS.FILM_ID " +
+                    "ORDER BY RATE DESC;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax, querySyntax);
         } else if (by.contains("director") && !by.contains("title")) {
             String sqlQuery = "SELECT *, " +
-                    "CAST(D.NAME AS VARCHAR_IGNORECASE) " +
+                    "CAST(D.NAME AS VARCHAR_IGNORECASE), " +
+                    "COUNT(FLMLK.FILM_ID) RATE " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
                     "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
                     "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
-                    "WHERE CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?;";
+                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
+                    "WHERE CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?" +
+                    "GROUP BY FILMS.FILM_ID " +
+                    "ORDER BY RATE DESC;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
         } else if (by.contains("title") && !by.contains("director")) {
             String sqlQuery = "SELECT *," +
-                    "CAST(FILMS.NAME AS VARCHAR_IGNORECASE) " +
+                    "CAST(FILMS.NAME AS VARCHAR_IGNORECASE), " +
+                    "COUNT(FLMLK.FILM_ID) RATE " +
                     "FROM FILMS " +
                     "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
                     "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
                     "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
-                    "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ?;";
+                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
+                    "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
+                    "GROUP BY FILMS.FILM_ID " +
+                    "ORDER BY RATE DESC;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
         } else {
             throw new ValidationException("Неверный запрос by");
         }
         loadGenres(films);
+        loadDirectors(films);
         return films;
     }
 }
