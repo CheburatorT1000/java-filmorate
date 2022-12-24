@@ -9,14 +9,16 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -137,7 +139,7 @@ public class FilmService {
         log.info("Фильм удален с id: '{}'", filmId);
     }
     
-    public List<Film> getSearchResults(String query, List<String> by) {
+    public Set<Film> getSearchResults(String query, List<String> by) {
         return filmStorage.getSearchResults(query, by);
     }
     
