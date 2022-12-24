@@ -33,5 +33,4 @@ public interface FilmStorage {
 
     Set<Film> getSearchResults(String query, List<String> by);
 
-
 }

@@ -9,9 +9,11 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-
 import java.time.LocalDate;
 import java.util.Collection;
+import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,8 +26,6 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_=@Autowired)
-
-
 public class FilmService {
 
     private final FilmStorage filmStorage;
@@ -123,6 +123,7 @@ public class FilmService {
     public List<Film> getCommonFilmsByRating(Long userId, Long friendId) {
 
         return filmStorage.getCommonFilmsByRating(userId, friendId);
+
     }
 
     public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
@@ -135,13 +136,14 @@ public class FilmService {
         films = filmStorage.getSortedDirectorsFilms(id, sortBy);
         return films;
     }
-
+    
     public void deleteById(int filmId) {
         filmStorage.deleteById(filmId);
         log.info("Фильм удален с id: '{}'", filmId);
     }
 
     public Set<Film> getSearchResults(String query, List<String> by) {
+
         return filmStorage.getSearchResults(query, by);
     }
     
