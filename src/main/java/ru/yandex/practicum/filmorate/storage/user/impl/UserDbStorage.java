@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.user.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -19,8 +21,7 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-@RequiredArgsConstructor
-
+@RequiredArgsConstructor(onConstructor_=@Autowired)
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -136,10 +137,23 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void deleteById(int userId) {
         String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
-        
-        jdbcTemplate.update(sqlQuery, userId);
-            }
 
+        jdbcTemplate.update(sqlQuery, userId);
+    }
+
+    @Override
+    public Integer findUserWithCommonLikes (int userWantsRecomId) {
+        String sqlQuery = "SELECT fl2.user_id " +
+                "FROM FILM_LIKES AS fl1, FILM_LIKES AS fl2 " +
+                "WHERE fl1.USER_ID = ? AND fl1.USER_ID != fl2.USER_ID " +
+                "GROUP BY fl1.user_id, fl2.user_id " +
+                "ORDER BY count(fl2.USER_ID) desc limit 1";
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, Integer.class, userWantsRecomId);
+        } catch (EmptyResultDataAccessException exception) {
+            return userWantsRecomId;
+        }
+    }
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
 
         return User.builder()
@@ -149,5 +163,12 @@ public class UserDbStorage implements UserStorage {
                 .name(resultSet.getString("NAME"))
                 .birthday(resultSet.getObject("BIRTHDAY", LocalDate.class))
                 .build();
+    }
+
+    @Override
+    public Boolean checkUserExist(Integer id) {
+        String sql = "SELECT exists (SELECT * FROM USERS WHERE USER_ID = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }
