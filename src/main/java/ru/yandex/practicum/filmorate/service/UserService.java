@@ -11,9 +11,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.util.Collection;
-
 import static ru.yandex.practicum.filmorate.model.enums.EventType.FRIEND;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
@@ -21,11 +19,11 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_=@Autowired)
+
 public class UserService {
 
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-
     private final FeedService feedService;
 
     public Collection<User> findAll() {

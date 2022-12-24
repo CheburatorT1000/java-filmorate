@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
 
@@ -30,6 +31,6 @@ public interface FilmStorage {
 
     Collection<Film> getFilmRecommendation (int userWantsRecomId, int userWithCommonLikesId);
 
-    List<Film> getSearchResults(String query, List<String> by);
+    Set<Film> getSearchResults(String query, List<String> by);
 
 }
