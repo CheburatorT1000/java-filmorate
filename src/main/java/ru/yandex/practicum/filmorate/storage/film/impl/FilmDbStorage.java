@@ -256,7 +256,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(int count) {
+    public List<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
         String sqlQuery = "SELECT FILMS.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
                 "FROM FILMS " +
                 "LEFT JOIN FILM_LIKES FL ON FILMS.FILM_ID = FL.FILM_ID " +
@@ -271,6 +271,19 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
         loadGenres(films);
         loadDirectors(films);
+
+        if (year.isPresent()) {
+            films = films.stream()
+                    .filter(film -> film.getReleaseDate().getYear() == year.get())
+                    .collect(toList());
+        }
+
+        if (genreId.isPresent()) {
+            films = films.stream().
+                    filter(film -> film.getGenres().stream()
+                            .anyMatch(genre -> genre.getId() == genreId.get()))
+                    .collect(toList());
+        }
         return films;
     }
 
