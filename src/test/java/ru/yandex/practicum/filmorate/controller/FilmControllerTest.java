@@ -37,7 +37,6 @@ class FilmControllerTest {
         filmService.save(film);
         assertEquals(1, filmService.getFilmFromStorage(1).getId());
         assertEquals(1, filmService.findAll().size());
-        assertEquals(1, filmService.getPopular(10).size());
         assertEquals(0, filmService.getFilmFromStorage(1).getGenres().size());
     }
 
