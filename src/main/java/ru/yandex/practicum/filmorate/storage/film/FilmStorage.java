@@ -34,4 +34,6 @@ public interface FilmStorage {
 
     Collection<Film> getSearchResults(String query, List<String> by);
 
+    List<Film> getSearchResults(String query, List<String> by);
+
 }
