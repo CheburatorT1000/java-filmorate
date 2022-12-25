@@ -16,6 +16,7 @@ import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -130,9 +131,13 @@ public class FilmService {
         films = filmStorage.getSortedDirectorsFilms(id, sortBy);
         return films;
     }
+
     public void deleteById(int filmId) {
         filmStorage.deleteById(filmId);
         log.info("Фильм удален с id: '{}'", filmId);
+    }
 
+    public Collection<Film> getSearchResults(String query, List<String> by) {
+        return filmStorage.getSearchResults(query, by);
     }
 }
