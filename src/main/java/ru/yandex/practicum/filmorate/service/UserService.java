@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.util.Collection;
-
 import static ru.yandex.practicum.filmorate.model.enums.EventType.FRIEND;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
@@ -19,10 +19,11 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_=@Autowired)
+
 public class UserService {
 
     private final UserStorage userStorage;
-
+    private final FilmStorage filmStorage;
     private final FeedService feedService;
 
     public Collection<User> findAll() {
@@ -124,5 +125,12 @@ public class UserService {
         if (!userStorage.checkUserExist(id)) {
             throw new NotFoundException(String.format("User with id: %d not found", id));
         }
+    }
+
+    public Collection<Film> getRecommendations(int userWantsRecomId) {
+        log.info("Найден пользователь с похожими лайками");
+        int userWithCommonLikesId = userStorage.findUserWithCommonLikes(userWantsRecomId);
+        log.info("Выгружаем список рекомендованных фильмов для пользователя {}", userWantsRecomId);
+        return filmStorage.getFilmRecommendation(userWantsRecomId, userWithCommonLikesId);
     }
 }

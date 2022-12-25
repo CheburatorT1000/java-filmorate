@@ -1,5 +1,4 @@
 DROP ALL OBJECTS;
-
 create table IF NOT EXISTS USERS
 (
     USER_ID  INTEGER auto_increment,
@@ -23,19 +22,13 @@ create table IF NOT EXISTS FRIENDS
             ON DELETE CASCADE
 );
 
-create table IF NOT EXISTS MPA
-(
-    MPA_ID  INTEGER auto_increment,
-    NAME    CHARACTER VARYING(50) not null,
-    constraint "MPA_pk"
-        primary key (MPA_ID)
-);
 CREATE TABLE IF NOT EXISTS DIRECTORS
 (
     DIRECTOR_ID   INTEGER auto_increment,
     NAME          CHARACTER VARYING(50) not null,
     CONSTRAINT directors_pk PRIMARY KEY (DIRECTOR_ID)
 );
+
 CREATE TABLE IF NOT EXISTS MPA (
     MPA_ID INTEGER auto_increment,
     NAME   CHARACTER VARYING(50) not null,
@@ -116,6 +109,7 @@ create table IF NOT EXISTS FEED
         primary key (EVENT_ID),
     constraint FEED_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
+            on delete cascade
 );
 
 create table IF NOT EXISTS REVIEWS
@@ -128,9 +122,11 @@ create table IF NOT EXISTS REVIEWS
     constraint "REVIEWS_pk"
         primary key (REVIEW_ID),
     constraint "REVIEWS_FILMS_null_fk"
-        foreign key (FILM_ID) references FILMS,
+        foreign key (FILM_ID) references FILMS
+        on delete cascade,
     constraint REVIEWS_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
+        on delete cascade
 );
 
 create table IF NOT EXISTS REVIEW_USER
@@ -143,4 +139,5 @@ create table IF NOT EXISTS REVIEW_USER
             on delete cascade,
     constraint REVIEW_USER_USERS_USER_ID_FK
         foreign key (USER_ID) references USERS
+            on delete cascade
 );
