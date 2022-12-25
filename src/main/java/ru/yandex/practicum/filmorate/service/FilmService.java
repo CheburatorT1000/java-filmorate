@@ -9,11 +9,9 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+
 import java.time.LocalDate;
 import java.util.Collection;
-import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
-import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
-import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
