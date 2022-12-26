@@ -2,21 +2,16 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.model.enums.Operation;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 
 import java.util.List;
 import java.util.Optional;
 
-import static ru.yandex.practicum.filmorate.model.enums.EventType.FRIEND;
 import static ru.yandex.practicum.filmorate.model.enums.EventType.REVIEW;
-import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
-import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
-import static ru.yandex.practicum.filmorate.model.enums.Operation.UPDATE;
+import static ru.yandex.practicum.filmorate.model.enums.Operation.*;
 
 @Slf4j
 @Service
@@ -34,7 +29,7 @@ public class ReviewService {
         if (review != null && review.getFilmId() <= 0)
             throw new NotFoundException("Фильм с таким id не может существовать");
         Review rew = reviewStorage.save(review);
-        feedService.addFeed(rew.getReviewId(), rew.getUserId(), REVIEW, Operation.ADD);
+        feedService.addFeed(rew.getReviewId(), rew.getUserId(), REVIEW, ADD);
         return rew;
     }
 
@@ -42,16 +37,19 @@ public class ReviewService {
         Review rew = reviewStorage.getReviewById(review.getReviewId())
                 .orElseThrow(() -> new NotFoundException("Отзыв не найден"));
 
-        feedService.addFeed(rew.getReviewId(), rew.getUserId(), REVIEW, UPDATE);
         reviewStorage.update(review);
+        feedService.addFeed(rew.getReviewId(), rew.getUserId(), REVIEW, UPDATE);
         return getReviewById(review.getReviewId());
     }
 
     public boolean delete(int id) {
         Review rew = reviewStorage.getReviewById(id)
                 .orElseThrow(() -> new NotFoundException("Отзыв не найден"));
+
+        boolean isDeleted = reviewStorage.delete(id);
         feedService.addFeed(rew.getReviewId(), rew.getUserId(), REVIEW, REMOVE);
-        return reviewStorage.delete(id);
+
+        return isDeleted;
     }
 
     public Review getReviewById(int id) {
@@ -66,19 +64,11 @@ public class ReviewService {
             return reviewStorage.getAllReviewsByParam(count);
     }
 
-    public void putLikeToReview(int id, int userId) {
-        reviewStorage.putLikeToReview(id, userId);
+    public void putLikeOrDislikeToReview(int id, int userId, int vote) {
+        reviewStorage.putLikeOrDislikeToReview(id, userId, vote);
     }
 
-    public void putDislikeToReview(int id, int userId) {
-        reviewStorage.putDislikeToReview(id, userId);
-    }
-
-    public void deleteLikeToReview(int id, int userId) {
-        reviewStorage.deleteLikeToReview(id, userId);
-    }
-
-    public void deleteDislikeToReview(int id, int userId) {
-        reviewStorage.deleteDislikeToReview(id, userId);
+    public void deleteLikeOrDislikeToReview(int id, int userId, int vote) {
+        reviewStorage.deleteLikeOrDislikeToReview(id, userId, vote);
     }
 }

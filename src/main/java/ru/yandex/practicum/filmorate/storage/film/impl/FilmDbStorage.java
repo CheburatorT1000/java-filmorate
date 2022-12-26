@@ -116,20 +116,6 @@ public class FilmDbStorage implements FilmStorage {
         } else
             return Optional.empty();
     }
-    private List<Genre> getGenresByFilmId(int id) {
-
-        String sqlQuery = "SELECT G.GENRE_ID, G.NAME " +
-                "FROM GENRE AS G " +
-                "JOIN FILM_GENRE FG on G.GENRE_ID = FG.GENRE_ID " +
-                "JOIN FILMS F on F.FILM_ID = FG.FILM_ID " +
-                "WHERE F.FILM_ID = ?";
-
-        return jdbcTemplate.query(sqlQuery, (resultSet, rowNum) ->
-                Genre.builder()
-                        .id(resultSet.getInt("GENRE_ID"))
-                        .name(resultSet.getString("NAME"))
-                        .build(), id);
-    }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         return Film.builder()
@@ -187,7 +173,7 @@ public class FilmDbStorage implements FilmStorage {
                 .map(Film::getId)
                 .collect(toList());
         Map<Integer, Film> filmMap = films.stream()
-                .collect(Collectors.toMap(film1 -> film1.getId(), film -> film, (a, b) -> b));
+                .collect(Collectors.toMap(Film::getId, film -> film, (a, b) -> b));
         SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
         SqlRowSet sqlRowSet = namedJdbcTemplate.queryForRowSet(sqlGenres, parameters);
         while (sqlRowSet.next()) {

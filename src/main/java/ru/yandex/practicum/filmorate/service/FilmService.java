@@ -22,7 +22,7 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
@@ -148,5 +148,4 @@ public class FilmService {
     public Collection<Film> getSearchResults(String query, List<String> by) {
         return filmStorage.getSearchResults(query, by);
     }
-
 }

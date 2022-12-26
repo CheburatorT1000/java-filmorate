@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.review.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -135,38 +134,20 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void putLikeToReview(int id, int userId) {
+    public void putLikeOrDislikeToReview(int id, int userId, int vote) {
         String sqlQuery = "INSERT INTO REVIEW_USER(REVIEW_ID, USER_ID, IS_USEFUL) " +
-                "VALUES (?, ?, 1)";
-        jdbcTemplate.update(sqlQuery, id, userId);
-        log.info("Добавляем лайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
+                "VALUES (?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, id, userId, vote);
+        log.info("Добавляем оценку : '{}' к отзыву с id: '{}' от пользователя с id: '{}'", vote, id, userId);
     }
 
     @Override
-    public void putDislikeToReview(int id, int userId) {
-        String sqlQuery = "INSERT INTO REVIEW_USER(REVIEW_ID, USER_ID, IS_USEFUL) " +
-                "VALUES (?, ?, -1)";
-        jdbcTemplate.update(sqlQuery, id, userId);
-        log.info("Добавляем дизлайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
-    }
-
-    @Override
-    public void deleteLikeToReview(int id, int userId) {
+    public void deleteLikeOrDislikeToReview(int id, int userId, int vote) {
         String sqlQuery = "DELETE FROM REVIEW_USER " +
                 "WHERE REVIEW_ID = ? " +
                 "AND USER_ID = ? " +
-                "AND IS_USEFUL = 1";
-        jdbcTemplate.update(sqlQuery, id, userId);
-        log.info("Удаляем лайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
-    }
-
-    @Override
-    public void deleteDislikeToReview(int id, int userId) {
-        String sqlQuery = "DELETE FROM REVIEW_USER " +
-                "WHERE REVIEW_ID = ? " +
-                "AND USER_ID = ? " +
-                "AND IS_USEFUL = -1";
-        jdbcTemplate.update(sqlQuery, id, userId);
-        log.info("Удаляем дизлайк к отзыву с id: '{}' от пользователя с id: '{}'", id, userId);
+                "AND IS_USEFUL = ?";
+        jdbcTemplate.update(sqlQuery, id, userId, vote);
+        log.info("Удаляем оценку : '{}' к отзыву с id: '{}' от пользователя с id: '{}'", vote, id, userId);
     }
 }

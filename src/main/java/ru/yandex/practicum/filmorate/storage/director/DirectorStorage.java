@@ -15,5 +15,5 @@ public interface DirectorStorage {
 
     Optional<Director> findDirectorById(int id);
 
-    void deleteDirector (int id);
+    boolean deleteDirector (int id);
 }
