@@ -14,8 +14,7 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor(onConstructor_=@Autowired)
-
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;

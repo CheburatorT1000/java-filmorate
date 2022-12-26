@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/reviews")
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;

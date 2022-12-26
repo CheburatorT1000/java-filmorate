@@ -20,7 +20,7 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.UPDATE;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class ReviewService {
 
     private final ReviewStorage reviewStorage;

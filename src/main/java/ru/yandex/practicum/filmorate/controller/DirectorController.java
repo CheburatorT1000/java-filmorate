@@ -14,7 +14,6 @@ import java.util.Collection;
 @RequestMapping("/directors")
 public class DirectorController {
 
-    @Autowired
     private final DirectorService directorService;
 
     @GetMapping

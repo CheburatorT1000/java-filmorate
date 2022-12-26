@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
@@ -63,26 +63,26 @@ public class FilmController {
                                       @RequestParam String sortBy) {
         return filmService.getSortedDirectorsFilms(directorId, sortBy);
     }
+
     @DeleteMapping("/{filmId}")
     public void deleteById(@PathVariable int filmId) {
         filmService.deleteById(filmId);
-
     }
 
     @GetMapping("/common")
-    public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+    public List<Film> getCommonFilms(@RequestParam long userId,
+                                     @RequestParam long friendId) {
         return filmService.getCommonFilmsByRating(userId, friendId);
     }
 
     @GetMapping("/search")
-    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam Optional<List<String>> by) {
-        if (by.isPresent()) {
+    public Collection<Film> getSearchResults(@RequestParam String query,
+                                             @RequestParam Optional<List<String>> by) {
+        int defaultResultLength = 10;
+
+        if (by.isPresent())
             return filmService.getSearchResults(query, by.get());
-        } else {
-            return filmService.getPopular(10, Optional.empty(), Optional.empty());
-        }
+        else
+            return filmService.getPopular(defaultResultLength, Optional.empty(), Optional.empty());
     }
-
 }
-
-
