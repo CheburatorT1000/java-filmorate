@@ -17,9 +17,8 @@ public class DirectorService {
     private final DirectorStorage directorStorage;
 
     public Director create(Director director) {
-        Director directorFromCreator = directorCreator(director);
         log.info("Добавляем режиссера в коллекцию");
-        return directorStorage.save(directorFromCreator);
+        return directorStorage.save(director);
     }
 
     public Director findDirectorById(int id) {
@@ -28,20 +27,9 @@ public class DirectorService {
     }
 
     public Director update(Director director) {
-        Director directorFromCreator = directorCreator(director);
         log.info("Обновляем режиссера в коллекции");
-        findDirectorById(directorFromCreator.getId());
-        return directorStorage.update(directorFromCreator);
-    }
-
-    public Director directorCreator(Director director) {
-        log.info("Создаем объект режиссер");
-        Director directorFromBuilder = Director.builder()
-                .id(director.getId())
-                .name(director.getName())
-                .build();
-        log.info("Объект режиссер создан, имя : '{}'", directorFromBuilder.getName());
-        return directorFromBuilder;
+        findDirectorById(director.getId());
+        return directorStorage.update(director);
     }
 
     public Collection<Director> findAll() {
