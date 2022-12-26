@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmController {
 
     private final FilmService filmService;
@@ -42,6 +43,7 @@ public class FilmController {
                         @PathVariable int userId) {
         return filmService.putLike(filmId, userId);
     }
+
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable("id") int filmId,
                            @PathVariable int userId) {
@@ -69,12 +71,8 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam Optional<List<String>> by) {
-        if (by.isPresent()) {
-            return filmService.getSearchResults(query, by.get());
-        } else {
-            return filmService.getPopular(10);
-        }
+    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam(defaultValue = "title") Optional<List<String>> by) {
+        return filmService.getSearchResults(query, by.get());
     }
 }
 
