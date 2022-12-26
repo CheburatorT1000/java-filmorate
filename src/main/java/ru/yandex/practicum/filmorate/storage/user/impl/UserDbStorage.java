@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_=@Autowired)
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -163,5 +163,12 @@ public class UserDbStorage implements UserStorage {
                 .name(resultSet.getString("NAME"))
                 .birthday(resultSet.getObject("BIRTHDAY", LocalDate.class))
                 .build();
+    }
+
+    @Override
+    public Boolean checkUserExist(Integer id) {
+        String sql = "SELECT exists (SELECT * FROM USERS WHERE USER_ID = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }
