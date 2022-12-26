@@ -136,7 +136,7 @@ public class FilmService {
         films = filmStorage.getSortedDirectorsFilms(id, sortBy);
         return films;
     }
-    
+
     public void deleteById(int filmId) {
         filmStorage.deleteById(filmId);
         log.info("Фильм удален с id: '{}'", filmId);
@@ -146,5 +146,5 @@ public class FilmService {
 
         return filmStorage.getSearchResults(query, by);
     }
-    
+
 }
