@@ -154,6 +154,7 @@ public class UserDbStorage implements UserStorage {
             return userWantsRecomId;
         }
     }
+
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
 
         return User.builder()
@@ -163,12 +164,5 @@ public class UserDbStorage implements UserStorage {
                 .name(resultSet.getString("NAME"))
                 .birthday(resultSet.getObject("BIRTHDAY", LocalDate.class))
                 .build();
-    }
-
-    @Override
-    public Boolean checkUserExist(Integer id) {
-        String sql = "SELECT exists (SELECT * FROM USERS WHERE USER_ID = ?)";
-
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }
