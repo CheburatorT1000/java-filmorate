@@ -57,4 +57,6 @@
 В приложение добавили функциональность для удаления фильма и пользователя по идентификатору. 
 
 
+### Диаграмма базы данных
+
 ![Диаграмма](https://github.com/CheburatorT1000/java-filmorate/blob/add-feed/src/main/resources/db_diagram/diagram.png)
