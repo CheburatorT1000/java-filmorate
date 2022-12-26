@@ -23,4 +23,10 @@ public interface UserStorage {
 
     Collection<User> getCommonFriendsFromUser(int id, int otherId);
 
+    void deleteById(int userId);
+
+    Boolean checkUserExist(Integer id);
+
+    Integer findUserWithCommonLikes(int userId);
+
 }

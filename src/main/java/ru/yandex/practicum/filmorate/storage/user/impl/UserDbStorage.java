@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.user.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,7 +11,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,23 +21,20 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-@Qualifier("userDb")
+@RequiredArgsConstructor(onConstructor_=@Autowired)
+
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Optional<User> findUserById(int id) {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY " +
                 "FROM USERS " +
                 "WHERE USER_ID = ?";
+
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if(userRows.next()) {
+        if (userRows.next()) {
             User user = User.builder()
                     .id(userRows.getInt("USER_ID"))
                     .email(userRows.getString("EMAIL"))
@@ -57,6 +54,7 @@ public class UserDbStorage implements UserStorage {
     public Collection<User> findAll() {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY " +
                 "FROM USERS";
+
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
     }
 
@@ -64,14 +62,15 @@ public class UserDbStorage implements UserStorage {
     public User save(User user) {
         String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " +
                 "VALUES (?, ?, ?, ?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
-            stmt.setString(1, user.getEmail());
-            stmt.setString(2, user.getLogin());
-            stmt.setString(3, user.getName());
-            stmt.setDate(4, Date.valueOf(user.getBirthday()));
-            return stmt;
+            PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
+            statement.setString(1, user.getEmail());
+            statement.setString(2, user.getLogin());
+            statement.setString(3, user.getName());
+            statement.setDate(4, Date.valueOf(user.getBirthday()));
+            return statement;
         }, keyHolder);
         user.setId(keyHolder.getKey().intValue());
         return user;
@@ -85,6 +84,7 @@ public class UserDbStorage implements UserStorage {
                 "NAME = ?, " +
                 "BIRTHDAY = ? " +
                 "WHERE USER_ID = ?";
+
         jdbcTemplate.update(sqlQuery,
                 user.getEmail(),
                 user.getLogin(),
@@ -96,7 +96,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void addFriend(User user, User friend) {
-
         String sqlQuery = "INSERT INTO FRIENDS (USER_ID, FRIEND_ID) " +
                 "VALUES (?, ?)";
 
@@ -119,6 +118,7 @@ public class UserDbStorage implements UserStorage {
                 "FROM USERS " +
                 "WHERE USER_ID IN " +
                 "(SELECT FRIEND_ID FROM FRIENDS WHERE FRIENDS.USER_ID = ?)";
+
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId);
     }
 
@@ -131,10 +131,32 @@ public class UserDbStorage implements UserStorage {
                 "JOIN FRIENDS AS FF ON F.FRIEND_ID = FF.FRIEND_ID " +
                 "WHERE F.USER_ID = ?" +
                 "AND FF.USER_ID = ?);";
+
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, otherId);
     }
 
+    @Override
+    public void deleteById(int userId) {
+        String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
+
+        jdbcTemplate.update(sqlQuery, userId);
+    }
+
+    @Override
+    public Integer findUserWithCommonLikes (int userWantsRecomId) {
+        String sqlQuery = "SELECT fl2.user_id " +
+                "FROM FILM_LIKES AS fl1, FILM_LIKES AS fl2 " +
+                "WHERE fl1.USER_ID = ? AND fl1.USER_ID != fl2.USER_ID " +
+                "GROUP BY fl1.user_id, fl2.user_id " +
+                "ORDER BY count(fl2.USER_ID) desc limit 1";
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, Integer.class, userWantsRecomId);
+        } catch (EmptyResultDataAccessException exception) {
+            return userWantsRecomId;
+        }
+    }
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
+
         return User.builder()
                 .id(resultSet.getInt("USER_ID"))
                 .email(resultSet.getString("EMAIL"))
@@ -144,4 +166,10 @@ public class UserDbStorage implements UserStorage {
                 .build();
     }
 
+    @Override
+    public Boolean checkUserExist(Integer id) {
+        String sql = "SELECT exists (SELECT * FROM USERS WHERE USER_ID = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
 }
