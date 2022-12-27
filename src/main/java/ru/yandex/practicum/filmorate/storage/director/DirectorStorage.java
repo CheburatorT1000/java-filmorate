@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
 import ru.yandex.practicum.filmorate.model.Director;
+
 import java.util.Collection;
 import java.util.Optional;
 
@@ -14,5 +15,5 @@ public interface DirectorStorage {
 
     Optional<Director> findDirectorById(int id);
 
-    void deleteDirector (int id);
+    boolean deleteDirector (int id);
 }

@@ -6,16 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
-import java.math.BigInteger;
 import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor(onConstructor_=@Autowired)
-
 public class UserController {
 
     private final UserService userService;

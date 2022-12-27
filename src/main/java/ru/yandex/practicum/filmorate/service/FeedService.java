@@ -29,7 +29,7 @@ public class FeedService {
     public Collection<Feed> getFeedByUserId(Integer userId) {
         userStorage.findUserById(userId);
         Collection<Feed> feed = feedStorage.getFeedByUserId(userId);
-        log.info("Получено событие '{}'", feed);
+        log.info("Получен список событий, размер списка '{}'", feed.size());
         return feed;
     }
 }

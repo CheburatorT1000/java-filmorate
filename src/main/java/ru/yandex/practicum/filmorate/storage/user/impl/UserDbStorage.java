@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;

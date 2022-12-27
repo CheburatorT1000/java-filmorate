@@ -18,7 +18,7 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor
 
 public class UserService {
 
@@ -81,7 +81,6 @@ public class UserService {
         return user;
     }
 
-    // на удаление
     public User findUserById(int id) {
         return userStorage.findUserById(id).
                 orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
@@ -106,6 +105,7 @@ public class UserService {
     }
 
     public Collection<Feed> getFeedByUserId(Integer id) {
+        findUserById(id);
         return feedService.getFeedByUserId(id);
     }
 
