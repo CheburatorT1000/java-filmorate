@@ -37,10 +37,9 @@ public class DirectorService {
         return directorStorage.findAll();
     }
 
-    public void deleteDirectorByID (int id) {
+    public void deleteDirectorByID(int id) {
         log.info(String.format("Удаляем режиссера с id: %s", id));
-        if(!directorStorage.deleteDirector(id))
+        if (!directorStorage.deleteDirector(id))
             throw new NotFoundException("Режиссер с таким id отсутствует в базе");
     }
-
 }

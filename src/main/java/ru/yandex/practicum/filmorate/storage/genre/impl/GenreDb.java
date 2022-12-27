@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -24,14 +25,14 @@ public class GenreDb implements GenreStorage {
         String sqlQuery = "SELECT GENRE_ID, NAME FROM GENRE WHERE GENRE_ID = ?";
 
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if(genreRows.next()) {
-             Genre genre = Genre.builder()
-                     .id(genreRows.getInt("GENRE_ID"))
-                     .name(genreRows.getString("NAME"))
-                     .build();
+        if (genreRows.next()) {
+            Genre genre = Genre.builder()
+                    .id(genreRows.getInt("GENRE_ID"))
+                    .name(genreRows.getString("NAME"))
+                    .build();
             log.info("Найден жанр {} с названием {} ", genreRows.getInt("GENRE_ID"),
                     genreRows.getString("NAME"));
-             return Optional.of(genre);
+            return Optional.of(genre);
         } else {
             log.info("Жанр с id {} не найден", id);
             return Optional.empty();
@@ -46,7 +47,7 @@ public class GenreDb implements GenreStorage {
 
     @Override
     public Genre mapRowToGenre(ResultSet resultSet, int i) throws SQLException {
-            return Genre.builder()
+        return Genre.builder()
                 .id(resultSet.getInt("GENRE_ID"))
                 .name(resultSet.getString("NAME"))
                 .build();

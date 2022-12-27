@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.review;
 
-import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.List;

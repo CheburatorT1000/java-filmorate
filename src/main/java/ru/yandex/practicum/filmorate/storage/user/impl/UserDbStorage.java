@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -141,7 +142,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Integer findUserWithCommonLikes (int userWantsRecomId) {
+    public Integer findUserWithCommonLikes(int userWantsRecomId) {
         String sqlQuery = "SELECT fl2.user_id " +
                 "FROM FILM_LIKES AS fl1, FILM_LIKES AS fl2 " +
                 "WHERE fl1.film_id = fl2.film_id " +

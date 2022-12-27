@@ -8,12 +8,13 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
+
 import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserController {
 
     private final UserService userService;
@@ -44,11 +45,13 @@ public class UserController {
                           @PathVariable int friendId) {
         userService.addFriend(id, friendId);
     }
+
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable int id,
                              @PathVariable int friendId) {
         userService.deleteFriend(id, friendId);
     }
+
     @GetMapping("/{id}/friends")
     public Collection<User> getFriendsFromUser(@PathVariable int id) {
         return userService.getFriendsFromUser(id);

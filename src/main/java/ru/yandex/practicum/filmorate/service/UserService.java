@@ -9,7 +9,9 @@ import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+
 import java.util.Collection;
+
 import static ru.yandex.practicum.filmorate.model.enums.EventType.FRIEND;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
@@ -110,5 +112,4 @@ public class UserService {
     public void deleteById(int userId) {
         userStorage.deleteById(userId);
     }
-
 }
