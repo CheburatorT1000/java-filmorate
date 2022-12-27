@@ -56,7 +56,6 @@ public class FilmController {
         return filmService.getPopular(count, genreId, year);
     }
 
-
     @GetMapping("/director/{directorId}")
     public List<Film> getByDirectorId(@PathVariable Integer directorId,
                                       @RequestParam String sortBy) {
@@ -66,7 +65,6 @@ public class FilmController {
     @DeleteMapping("/{filmId}")
     public void deleteById(@PathVariable int filmId) {
         filmService.deleteById(filmId);
-
     }
 
     @GetMapping("/common")
@@ -76,13 +74,7 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public Collection<Film> getSearchResults(@RequestParam String query,
-                                             @RequestParam Optional<List<String>> by) {
-        int defaultResultLength = 10;
-
-        if (by.isPresent())
-            return filmService.getSearchResults(query, by.get());
-        else
-            return filmService.getPopular(defaultResultLength, Optional.empty(), Optional.empty());
+    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam(defaultValue = "title") Optional<List<String>> by) {
+        return filmService.getSearchResults(query, by.get());
     }
 }

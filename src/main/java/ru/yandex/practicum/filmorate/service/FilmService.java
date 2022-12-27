@@ -119,7 +119,6 @@ public class FilmService {
 
     public List<Film> getCommonFilmsByRating(Long userId, Long friendId) {
         return filmStorage.getCommonFilmsByRating(userId, friendId);
-
     }
 
     public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {

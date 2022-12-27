@@ -385,44 +385,33 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Collection<Film> getSearchResults(String query, List<String> by) {
+        String querySourceDbLines = "SELECT FILMS.FILM_ID, FILMS.NAME, FILMS.DESCRIPTION, FILMS.RELEASE_DATE, FILMS.DURATION, FILMS.MPA_ID, MPA.MPA_ID, MPA.NAME, " +
+                "D.NAME, " +
+                "COUNT(FLMLK.FILM_ID) RATE " +
+                "FROM FILMS " +
+                "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
+                "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
+                "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
+                "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID ";
         String querySyntax = "%" + query + "%";
         List<Film> films;
         if (by.contains("title") && by.contains("director")) {
-            String sqlQuery = "SELECT FILMS.FILM_ID, FILMS.NAME, FILMS.DESCRIPTION, FILMS.RELEASE_DATE, FILMS.DURATION, FILMS.MPA_ID, MPA.MPA_ID, MPA.NAME, " +
-                    "CAST(FILMS.NAME AS VARCHAR_IGNORECASE), " +
-                    "CAST(D.NAME AS VARCHAR_IGNORECASE), " +
-                    "COUNT(FLMLK.FILM_ID) RATE " +
-                    "FROM FILMS " +
-                    "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
-                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
-                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
-                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
-                    "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
-                    "OR CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
+            String sqlQuery = querySourceDbLines +
+                    "WHERE LOWER(FILMS.NAME) LIKE LOWER(?) " +
+                    "OR LOWER(D.NAME) LIKE LOWER(?) " +
                     "GROUP BY FILMS.FILM_ID, FLMLK.FILM_ID " +
                     "ORDER BY RATE DESC;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax, querySyntax);
-        } else if (by.contains("director") && !by.contains("title")) {
-            String sqlQuery = "SELECT FILMS.FILM_ID, FILMS.NAME, FILMS.DESCRIPTION, FILMS.RELEASE_DATE, FILMS.DURATION, FILMS.MPA_ID, MPA.MPA_ID, MPA.NAME, " +
-                    "CAST(D.NAME AS VARCHAR_IGNORECASE), " +
-                    "COUNT(FLMLK.FILM_ID) RATE " +
-                    "FROM FILMS " +
-                    "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
-                    "LEFT JOIN FILM_DIRECTOR FD ON FILMS.FILM_ID=FD.FILM_ID " +
-                    "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID " +
-                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
-                    "WHERE CAST(D.NAME AS VARCHAR_IGNORECASE) LIKE ?" +
+        } else if (by.contains("director")) {
+            String sqlQuery = querySourceDbLines +
+                    "WHERE LOWER(D.NAME) LIKE LOWER(?) " +
                     "GROUP BY FILMS.FILM_ID, FLMLK.FILM_ID " +
                     "ORDER BY RATE DESC;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
-        } else if (by.contains("title") && !by.contains("director")) {
-            String sqlQuery = "SELECT *," +
-                    "COUNT(FLMLK.FILM_ID) RATE " +
-                    "FROM FILMS " +
-                    "LEFT JOIN MPA ON FILMS.MPA_ID=MPA.MPA_ID " +
-                    "LEFT JOIN FILM_LIKES FLMLK ON FILMS.FILM_ID = FLMLK.FILM_ID " +
-                    "WHERE CAST(FILMS.NAME AS VARCHAR_IGNORECASE) LIKE ? " +
-                    "GROUP BY FILMS.FILM_ID " +
+        } else if (by.contains("title")) {
+            String sqlQuery = querySourceDbLines +
+                    "WHERE LOWER(FILMS.NAME) LIKE LOWER(?) " +
+                    "GROUP BY FILMS.FILM_ID, FLMLK.FILM_ID " +
                     "ORDER BY RATE DESC;";
             films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, querySyntax);
         } else {
