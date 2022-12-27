@@ -245,7 +245,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
         List<Film> films;
-        String sqlQuery;
 
         String sqlQueryWithEmpty = "SELECT FILMS.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
                 "FROM FILMS " +
@@ -258,17 +257,17 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY COUNT(FL.FILM_ID) DESC " +
                 "LIMIT ?";
 
-        String sqlQueryWithGenreId = "SELECT F.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
+        String sqlQueryWithGenreId = "SELECT F.FILM_ID, F.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
                 "FROM FILM_GENRE FG " +
                 "RIGHT JOIN FILMS F ON F.FILM_ID = FG.FILM_ID " +
                 "RIGHT JOIN MPA M on M.MPA_ID = F.MPA_ID " +
-                "RIGHT JOIN FILM_LIKES FL ON F.FILM_ID = FL.FILM_ID " +
+                "LEFT JOIN FILM_LIKES FL ON F.FILM_ID = FL.FILM_ID " +
                 "WHERE FG.GENRE_ID = ? " +
                 "GROUP BY F.FILM_ID " +
                 "ORDER BY COUNT(FL.FILM_ID) DESC " +
                 "LIMIT ?";
 
-        String sqlQueryWithYear = "SELECT F.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
+        String sqlQueryWithYear = "SELECT F.FILM_ID, F.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
                 "FROM FILMS F " +
                 "RIGHT JOIN MPA M on M.MPA_ID = F.MPA_ID " +
                 "LEFT JOIN FILM_LIKES FL ON F.FILM_ID = FL.FILM_ID " +
@@ -277,11 +276,11 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY COUNT(FL.FILM_ID) DESC " +
                 "LIMIT ?";
 
-        String sqlQueryWithGenreIdAndYear = "SELECT F.FILM_ID, FILMS.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
+        String sqlQueryWithGenreIdAndYear = "SELECT F.FILM_ID, F.NAME, DESCRIPTION, RELEASE_DATE, DURATION, M.MPA_ID, M.NAME " +
                 "FROM FILM_GENRE FG " +
                 "RIGHT JOIN FILMS F ON F.FILM_ID = FG.FILM_ID " +
                 "RIGHT JOIN MPA M on M.MPA_ID = F.MPA_ID " +
-                "RIGHT JOIN FILM_LIKES FL ON F.FILM_ID = FL.FILM_ID " +
+                "LEFT JOIN FILM_LIKES FL ON F.FILM_ID = FL.FILM_ID " +
                 "WHERE FG.GENRE_ID = ? AND YEAR(F.RELEASE_DATE) = ? " +
                 "GROUP BY F.FILM_ID " +
                 "ORDER BY COUNT(FL.FILM_ID) DESC " +
@@ -289,15 +288,14 @@ public class FilmDbStorage implements FilmStorage {
 
 
         if (genreId.isPresent() && year.isPresent())
-            sqlQuery = sqlQueryWithGenreIdAndYear;
+            films = jdbcTemplate.query(sqlQueryWithGenreIdAndYear, this::mapRowToFilm, genreId.get(), year.get(), count);
         else if (genreId.isPresent())
-            sqlQuery = sqlQueryWithGenreId;
+            films = jdbcTemplate.query(sqlQueryWithGenreId, this::mapRowToFilm, genreId.get(), count);
         else if (year.isPresent())
-            sqlQuery = sqlQueryWithYear;
+            films = jdbcTemplate.query(sqlQueryWithYear, this::mapRowToFilm, year.get(), count);
         else
-            sqlQuery = sqlQueryWithEmpty;
+            films = jdbcTemplate.query(sqlQueryWithEmpty, this::mapRowToFilm, count);
 
-        films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
         loadGenres(films);
         loadDirectors(films);
 
