@@ -25,8 +25,5 @@ public interface UserStorage {
 
     void deleteById(int userId);
 
-    Boolean checkUserExist(Integer id);
-
     Integer findUserWithCommonLikes(int userId);
-
 }

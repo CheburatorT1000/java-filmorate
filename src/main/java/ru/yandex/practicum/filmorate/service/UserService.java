@@ -2,12 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -18,7 +16,7 @@ import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor
 
 public class UserService {
 
@@ -42,7 +40,6 @@ public class UserService {
     }
 
     public User update(User user) {
-        checkUserExist(user.getId());
         log.info("Проверяем user в валидаторах");
         validateLogin(user);
         user = validateName(user);
@@ -82,23 +79,17 @@ public class UserService {
         return user;
     }
 
-    // на удаление
     public User findUserById(int id) {
-        checkUserExist(id);
         return userStorage.findUserById(id).
                 orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
     }
 
     public void addFriend(int id, int friendId) {
-        checkUserExist(id);
-        checkUserExist(friendId);
         userStorage.addFriend(findUserById(id), findUserById(friendId));
         feedService.addFeed(friendId, id, FRIEND, ADD);
     }
 
     public void deleteFriend(int id, int friendId) {
-        checkUserExist(id);
-        checkUserExist(friendId);
         userStorage.deleteFriend(findUserById(id), findUserById(friendId));
         feedService.addFeed(friendId, id, FRIEND, REMOVE);
     }
@@ -108,12 +99,11 @@ public class UserService {
     }
 
     public Collection<User> getCommonFriendsFromUser(int id, int otherId) {
-        checkUserExist(id);
         return userStorage.getCommonFriendsFromUser(findUserById(id).getId(), findUserById(otherId).getId());
     }
 
     public Collection<Feed> getFeedByUserId(Integer id) {
-        checkUserExist(id);
+        findUserById(id);
         return feedService.getFeedByUserId(id);
     }
 
@@ -121,16 +111,4 @@ public class UserService {
         userStorage.deleteById(userId);
     }
 
-    public void checkUserExist(Integer id) {
-        if (!userStorage.checkUserExist(id)) {
-            throw new NotFoundException(String.format("User with id: %d not found", id));
-        }
-    }
-
-    public Collection<Film> getRecommendations(int userWantsRecomId) {
-        log.info("Найден пользователь с похожими лайками");
-        int userWithCommonLikesId = userStorage.findUserWithCommonLikes(userWantsRecomId);
-        log.info("Выгружаем список рекомендованных фильмов для пользователя {}", userWantsRecomId);
-        return filmStorage.getFilmRecommendation(userWantsRecomId, userWithCommonLikesId);
-    }
 }
