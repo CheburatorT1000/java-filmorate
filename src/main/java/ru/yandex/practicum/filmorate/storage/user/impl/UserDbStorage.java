@@ -154,6 +154,7 @@ public class UserDbStorage implements UserStorage {
             return userWantsRecomId;
         }
     }
+
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
 
         return User.builder()
