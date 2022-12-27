@@ -19,11 +19,7 @@ public interface ReviewStorage {
 
     List<Review> getAllReviewsByParam(int count);
 
-    void putLikeToReview(int id, int userId);
+    void putLikeOrDislikeToReview(int id, int userId, int vote);
 
-    void putDislikeToReview(int id, int userId);
-
-    void deleteLikeToReview(int id, int userId);
-
-    void deleteDislikeToReview(int id, int userId);
+    void deleteLikeOrDislikeToReview(int id, int userId, int vote);
 }

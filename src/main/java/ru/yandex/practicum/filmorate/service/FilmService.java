@@ -9,18 +9,20 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.model.enums.EventType.LIKE;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.ADD;
 import static ru.yandex.practicum.filmorate.model.enums.Operation.REMOVE;
-import java.util.List;
+
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_=@Autowired)
-
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
@@ -116,23 +118,34 @@ public class FilmService {
     }
 
     public List<Film> getCommonFilmsByRating(Long userId, Long friendId) {
-
         return filmStorage.getCommonFilmsByRating(userId, friendId);
+
     }
 
-    public Collection<Film> getPopular(int count) {
-        return filmStorage.getPopular(count);
+    public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        return filmStorage.getPopular(count, genreId, year);
     }
 
     public List<Film> getSortedDirectorsFilms(int id, String sortBy) {
-        List<Film> films;
         directorService.findDirectorById(id);
-        films = filmStorage.getSortedDirectorsFilms(id, sortBy);
-        return films;
+
+        log.info("Проверяем способ сортировки");
+        switch (sortBy) {
+            case "year":
+                return filmStorage.getSortedDirectorsFilmsByYears(id);
+            case "likes":
+                return filmStorage.getSortedDirectorsFilmsByLikes(id);
+            default:
+                throw new ValidationException(String.format("Передан некорректный параметр сортировки: %s", sortBy));
+        }
     }
+
     public void deleteById(int filmId) {
         filmStorage.deleteById(filmId);
         log.info("Фильм удален с id: '{}'", filmId);
+    }
 
+    public Collection<Film> getSearchResults(String query, List<String> by) {
+        return filmStorage.getSearchResults(query, by);
     }
 }

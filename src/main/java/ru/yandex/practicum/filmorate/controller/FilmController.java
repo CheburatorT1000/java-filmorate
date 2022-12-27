@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
@@ -42,6 +42,7 @@ public class FilmController {
                         @PathVariable int userId) {
         return filmService.putLike(filmId, userId);
     }
+
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable("id") int filmId,
                            @PathVariable int userId) {
@@ -49,24 +50,39 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopular(count);
+    public Collection<Film> getMostRatedFilms(@RequestParam(defaultValue = "10") int count,
+                                              @RequestParam Optional<Integer> genreId,
+                                              @RequestParam Optional<Integer> year) {
+        return filmService.getPopular(count, genreId, year);
     }
 
+
     @GetMapping("/director/{directorId}")
-    public List<Film> getByDirectorId(@PathVariable Integer directorId, @RequestParam String sortBy) {
+    public List<Film> getByDirectorId(@PathVariable Integer directorId,
+                                      @RequestParam String sortBy) {
         return filmService.getSortedDirectorsFilms(directorId, sortBy);
     }
 
     @DeleteMapping("/{filmId}")
     public void deleteById(@PathVariable int filmId) {
         filmService.deleteById(filmId);
+
     }
 
     @GetMapping("/common")
-    public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+    public List<Film> getCommonFilms(@RequestParam long userId,
+                                     @RequestParam long friendId) {
         return filmService.getCommonFilmsByRating(userId, friendId);
     }
+
+    @GetMapping("/search")
+    public Collection<Film> getSearchResults(@RequestParam String query,
+                                             @RequestParam Optional<List<String>> by) {
+        int defaultResultLength = 10;
+
+        if (by.isPresent())
+            return filmService.getSearchResults(query, by.get());
+        else
+            return filmService.getPopular(defaultResultLength, Optional.empty(), Optional.empty());
+    }
 }
-
-

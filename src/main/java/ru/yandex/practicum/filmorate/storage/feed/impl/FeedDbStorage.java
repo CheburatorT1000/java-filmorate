@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
-@RequiredArgsConstructor(onConstructor_=@Autowired)
+@RequiredArgsConstructor
 public class FeedDbStorage implements FeedStorage {
 
     private final JdbcTemplate jdbcTemplate;
