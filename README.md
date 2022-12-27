@@ -59,4 +59,4 @@
 
 ### Диаграмма базы данных
 
-![Диаграмма](https://github.com/CheburatorT1000/java-filmorate/blob/add-feed/src/main/resources/db_diagram/diagram.png)
+![Alt text](src/main/resources/db_diagram/new_diagram.png?raw=true "Title")
