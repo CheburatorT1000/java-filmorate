@@ -55,7 +55,7 @@ public class DirectorDbStorage implements DirectorStorage {
         String sqlQuery = "SELECT DIRECTOR_ID, NAME FROM DIRECTORS WHERE DIRECTOR_ID = ?";
 
         SqlRowSet directorRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if(directorRows.next()) {
+        if (directorRows.next()) {
             Director director = Director.builder()
                     .id(directorRows.getInt("DIRECTOR_ID"))
                     .name(directorRows.getString("NAME"))
@@ -70,9 +70,9 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public void deleteDirector(int id) {
+    public boolean deleteDirector(int id) {
         String sql = "DELETE FROM DIRECTORS WHERE DIRECTOR_ID = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) > 0;
     }
 
     public Director mapRowToDirector(ResultSet resultSet, int i) throws SQLException {

@@ -13,5 +13,4 @@ public interface MpaStorage {
     Collection<MPA> findAll();
 
     MPA mapRowToMpa(ResultSet resultSet, int i) throws SQLException;
-
 }

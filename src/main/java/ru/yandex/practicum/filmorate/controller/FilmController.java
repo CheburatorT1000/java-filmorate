@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
@@ -56,32 +56,25 @@ public class FilmController {
         return filmService.getPopular(count, genreId, year);
     }
 
-
     @GetMapping("/director/{directorId}")
     public List<Film> getByDirectorId(@PathVariable Integer directorId,
                                       @RequestParam String sortBy) {
         return filmService.getSortedDirectorsFilms(directorId, sortBy);
     }
+
     @DeleteMapping("/{filmId}")
     public void deleteById(@PathVariable int filmId) {
         filmService.deleteById(filmId);
-
     }
 
     @GetMapping("/common")
-    public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+    public List<Film> getCommonFilms(@RequestParam long userId,
+                                     @RequestParam long friendId) {
         return filmService.getCommonFilmsByRating(userId, friendId);
     }
 
     @GetMapping("/search")
-    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam Optional<List<String>> by) {
-        if (by.isPresent()) {
-            return filmService.getSearchResults(query, by.get());
-        } else {
-            return filmService.getPopular(10, Optional.empty(), Optional.empty());
-        }
+    public Collection<Film> getSearchResults(@RequestParam String query, @RequestParam(defaultValue = "title") Optional<List<String>> by) {
+        return filmService.getSearchResults(query, by.get());
     }
-
 }
-
-

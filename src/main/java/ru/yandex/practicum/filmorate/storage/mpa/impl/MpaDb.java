@@ -24,7 +24,7 @@ public class MpaDb implements MpaStorage {
         String sqlQuery = "SELECT MPA_ID, NAME FROM MPA WHERE MPA_ID = ?";
 
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if(mpaRows.next()) {
+        if (mpaRows.next()) {
             MPA mpa = MPA.builder()
                     .id(mpaRows.getInt("MPA_ID"))
                     .name(mpaRows.getString("NAME"))
