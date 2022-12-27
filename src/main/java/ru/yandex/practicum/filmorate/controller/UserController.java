@@ -1,8 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -10,14 +14,11 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserController {
 
-    @Autowired
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final FilmService filmService;
 
     @GetMapping
     public Collection<User> findAll() {
@@ -60,5 +61,20 @@ public class UserController {
     public Collection<User> getCommonFriendsFromUser(@PathVariable int id,
                                                      @PathVariable int otherId) {
         return userService.getCommonFriendsFromUser(id, otherId);
+    }
+
+    @GetMapping("/{userId}/feed")
+    public Collection<Feed> getFeed(@PathVariable Integer userId) {
+        return userService.getFeedByUserId(userId);
+    }
+
+    @DeleteMapping("{userId}")
+    public void deleteById(@PathVariable int userId) {
+        userService.deleteById(userId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<Film> getRecommendations(@PathVariable int id) {
+        return filmService.getRecommendations(id);
     }
 }
